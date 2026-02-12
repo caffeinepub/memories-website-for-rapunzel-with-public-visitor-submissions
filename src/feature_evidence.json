@@ -2,10 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-add-a-floating-bottom-right-corner-helper-widget-named-tingi-that-is-visible-on-the-main-memories-experience-i-e-after-the-visitor-passes-the-4-digit-password-gate-and-dismisses-the-welcome-page-the-widget-must-use-a-small-icon-open-close-on-click-and-match-the-site-s-existing-warm-tailwind-shadcn-visual-theme",
-      "featureTitle": "Add a floating bottom-right corner helper widget named “Tingi” that is visible on the main memories experience (i.e., after the visitor passes the 4-digit password gate and dismisses the welcome page). The widget must use a small icon, open/close on click, and match the site’s existing warm Tailwind + shadcn visual theme.",
+      "featureId": "feature-remove-the-existing-tingi-search-assistant-experience-and-replace-it-with-a-new-bottom-right-floating-helper-widget-named-piddu-that-simulates-a-chatgpt-style-chat-experience-using-deterministic-scripted-behavior-only-with-a-fully-new-ui-look",
+      "featureTitle": "Remove the existing Tingi search assistant experience and replace it with a new bottom-right floating helper widget named “Piddu” that simulates a ChatGPT-style chat experience using deterministic/scripted behavior only, with a fully new UI look.",
       "files": [
-        "frontend/src/App.tsx",
+        "frontend/src/components/PidduWidget.tsx",
         "frontend/src/components/TingiWidget.tsx"
       ],
       "components": [
@@ -13,67 +13,70 @@
         "shadcn-ui@1.0.0",
         "build-template-react@1.0.0",
         "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
+        "github-export-icp-cli@1.0.0",
+        "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-20"
+        "REQ-36"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-implement-a-simple-chat-like-interaction-ui-for-tingi-where-the-visitor-can-type-a-question-and-submit-it-see-a-loading-state-and-receive-a-short-funny-response-since-no-llms-are-available-generate-humor-via-deterministic-templates-e-g-playful-one-liners-combined-with-information-extracted-from-google-results",
-      "featureTitle": "Implement a simple chat-like interaction UI for Tingi where the visitor can type a question and submit it, see a loading state, and receive a short “funny” response. Since no LLMs are available, generate humor via deterministic templates (e.g., playful one-liners) combined with information extracted from Google results.",
+      "featureId": "feature-implement-piddu-s-responses-entirely-on-the-frontend-using-deterministic-logic-no-llm-calls-no-external-apis-and-no-backend-calls",
+      "featureTitle": "Implement Piddu’s responses entirely on the frontend using deterministic logic (no LLM calls, no external APIs, and no backend calls).",
       "files": [
-        "frontend/src/components/TingiWidget.tsx",
-        "frontend/src/lib/tingiHumor.ts"
+        "frontend/src/components/PidduWidget.tsx",
+        "frontend/src/lib/pidduDeterministic.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
         "shadcn-ui@1.0.0",
         "build-template-react@1.0.0",
         "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
+        "github-export-icp-cli@1.0.0",
+        "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-21"
+        "REQ-37"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-integrate-tingi-with-the-google-custom-search-json-api-to-fetch-information-for-a-user-query-and-use-it-to-produce-the-short-funny-summary-the-implementation-must-call-the-google-custom-search-endpoint-from-the-frontend-and-support-configuring-the-required-google-api-key-and-custom-search-engine-id-cx-from-the-ui-stored-locally-in-the-browser",
-      "featureTitle": "Integrate Tingi with the Google Custom Search JSON API to fetch information for a user query and use it to produce the short funny summary. The implementation must call the Google Custom Search endpoint from the frontend and support configuring the required Google API key and Custom Search Engine ID (cx) from the UI (stored locally in the browser).",
+      "featureId": "feature-remove-tingi-search-wiring-from-the-frontend-including-the-react-query-mutation-hook-and-any-unused-tingi-configuration-search-helper-modules-so-the-build-contains-no-active-tingi-search-flow",
+      "featureTitle": "Remove Tingi search wiring from the frontend, including the React Query mutation hook and any unused Tingi configuration/search helper modules, so the build contains no active Tingi search flow.",
       "files": [
-        "frontend/src/components/TingiWidget.tsx",
-        "frontend/src/hooks/useTingiConfig.ts",
-        "frontend/src/lib/googleCustomSearch.ts"
+        "frontend/src/hooks/useQueries.ts",
+        "frontend/src/hooks/useTingiConfig.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
         "shadcn-ui@1.0.0",
         "build-template-react@1.0.0",
         "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
+        "github-export-icp-cli@1.0.0",
+        "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-22"
+        "REQ-38"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-generated-static-image-assets-for-tingi-s-icon-and-render-it-in-the-tingi-widget",
-      "featureTitle": "Add generated static image assets for Tingi’s icon and render it in the Tingi widget.",
+      "featureId": "feature-update-the-app-shell-to-render-the-new-piddu-widget-instead-of-tingiwidget-only-in-the-main-memories-experience-after-the-visitor-unlocks-with-the-4-digit-code-and-dismisses-the-welcome-page",
+      "featureTitle": "Update the app shell to render the new Piddu widget (instead of TingiWidget) only in the main memories experience (after the visitor unlocks with the 4-digit code and dismisses the welcome page).",
       "files": [
-        "frontend/src/components/TingiWidget.tsx"
+        "frontend/src/App.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
         "shadcn-ui@1.0.0",
         "build-template-react@1.0.0",
         "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
+        "github-export-icp-cli@1.0.0",
+        "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-23"
+        "REQ-40"
       ],
       "confidence": "high"
     }

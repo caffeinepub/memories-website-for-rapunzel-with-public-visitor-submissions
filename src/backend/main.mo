@@ -2,13 +2,10 @@ import List "mo:core/List";
 import Map "mo:core/Map";
 import Nat64 "mo:core/Nat64";
 import Order "mo:core/Order";
-import Text "mo:core/Text";
 import Time "mo:core/Time";
 
-import Runtime "mo:core/Runtime";
-
-
 actor {
+  // Memory Type and Management
   type Memory = {
     id : Nat64;
     text : Text;
@@ -32,6 +29,7 @@ actor {
     #err : { message : Text };
   };
 
+  // Existing Memories API
   public shared ({ caller }) func submitMemory(
     text : Text,
     author : ?Text,

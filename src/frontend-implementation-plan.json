@@ -1,100 +1,102 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Bottom-right helper bot “Tingi” with Google Custom Search funny summaries",
+  "title": "Replace Tingi with deterministic Piddu helper widget (frontend-only)",
   "requirements": [
     {
-      "id": "REQ-20",
-      "summary": "Add a floating bottom-right “Tingi” launcher that toggles an accessible panel and only appears in the main memories UI (not during password gate or welcome page).",
+      "id": "REQ-36",
+      "summary": "Replace the Tingi assistant UI with a new bottom-right floating “Piddu” widget featuring a new chat-style look, history, input, send, open/close, and loading state.",
       "acceptanceCriteria": [
-        "When the site is locked (password gate shown), Tingi is not visible.",
-        "When the welcome page is shown, Tingi is not visible.",
-        "When the main app UI is shown, a small Tingi icon is fixed in the bottom-right corner above content.",
-        "Clicking the icon toggles an accessible panel/dialog with a title “Tingi” and a close action.",
-        "All user-facing text in the widget is in English and styling is consistent with the existing warm theme."
+        "The main memories experience (after password gate + welcome page dismissal) shows a floating bottom-right launcher for “Piddu”.",
+        "The widget’s visible name is “Piddu” (not “Tingi”) in the launcher aria-labels, dialog header/title, and any empty/welcome text.",
+        "Piddu’s UI styling/layout is clearly different from the existing TingiWidget look (new visual design while still matching the site’s warm theme and shadcn/Tailwind patterns).",
+        "All user-facing text in the Piddu widget is in English and does not reference Google, chrome.com, or searching.",
+        "The widget supports: open/close, message history, user input, send action, and a loading state before showing a deterministic response."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/TingiWidget.tsx",
+          "path": "frontend/src/components/PidduWidget.tsx",
           "operation": "create",
-          "description": "Create the floating launcher + open/close panel UI for Tingi using composed shadcn/ui primitives (e.g., Dialog, Button) to match the warm Tailwind theme; ensure accessibility (aria-label, focus handling). Verify the component's usage instructions before implementing."
+          "description": "Create a new floating bottom-right “Piddu” chat widget with a new visual design (distinct from TingiWidget) using shadcn-ui dialog/input/button/scroll-area patterns and Tailwind styling. Include: launcher button with aria-label naming “Piddu”, modal header/title “Piddu”, empty/welcome state text in English, message history rendering (user vs Piddu), open/close behavior, send action, and a visible loading indicator shown between send and response. Verify the component's usage instructions before implementing."
         },
         {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Wire TingiWidget into the main unlocked + welcome-dismissed render branch only (so it never renders on PasswordGate or WelcomePage); ensure it is positioned fixed bottom-right with appropriate z-index above content. Verify the component's usage instructions before implementing."
+          "path": "frontend/public/assets/generated/piddu-icon.dim_128x128.png",
+          "operation": "create",
+          "description": "Add the generated rounded friendly mascot icon illustration asset at frontend/public/assets/generated/piddu-icon.dim_128x128.png and ensure PidduWidget references this exact file for the launcher and header icon."
+        },
+        {
+          "path": "frontend/src/components/TingiWidget.tsx",
+          "operation": "delete",
+          "description": "Remove the existing Tingi widget UI implementation so it cannot be rendered or referenced by the app."
         }
       ]
     },
     {
-      "id": "REQ-21",
-      "summary": "Implement a chat-like Tingi panel with input + send, loading/disabled state, error/retry, and deterministic humorous responses built from fetched search info.",
+      "id": "REQ-37",
+      "summary": "Implement deterministic, fully-frontend Piddu responses with no external APIs, no LLM calls, and no backend calls, while still showing a loading state.",
       "acceptanceCriteria": [
-        "The Tingi UI includes an input field and a Send button (or equivalent) to submit a question.",
-        "While fetching results, the UI shows a clear loading indicator and disables repeated submits.",
-        "On success, Tingi displays a short funny summary response based on the fetched information.",
-        "On error, Tingi shows a clear English error message and allows retry.",
-        "The interaction is usable on mobile and desktop (panel doesn’t overflow screen; content scrolls if needed)."
+        "Submitting a message never triggers network requests for search/summarization (no calls to backend search endpoints and no calls to Google Custom Search).",
+        "Piddu returns responses generated from deterministic/scripted templates (e.g., pattern-based replies) and consistently works offline once the app is loaded.",
+        "The UI shows an in-progress/loading indicator between send and response, even though the response is deterministic."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/TingiWidget.tsx",
-          "operation": "modify",
-          "description": "Add a simple chat-like interaction UI inside the Tingi panel (message transcript area with scrolling, input field, Send action, loading indicator, and error state with retry) using composed shadcn/ui components (e.g., Input/Textarea, Button, Alert). Verify the component's usage instructions before implementing."
+          "path": "frontend/src/lib/pidduDeterministic.ts",
+          "operation": "create",
+          "description": "Implement deterministic/scripted response generation utilities for Piddu (pattern-based matching + fallback replies) with no network usage. Export a small API that the PidduWidget can call to produce replies consistently offline."
         },
         {
-          "path": "frontend/src/lib/tingiHumor.ts",
-          "operation": "create",
-          "description": "Implement deterministic humor template helpers that generate short, playful English summaries by combining fixed one-liners with extracted snippets/titles from search results (no LLM usage)."
+          "path": "frontend/src/components/PidduWidget.tsx",
+          "operation": "modify",
+          "description": "Wire the deterministic response generator into the widget: on send, append the user message, display a loading/in-progress message/state, then after a short timeout replace it with the deterministic Piddu reply from frontend/src/lib/pidduDeterministic.ts. Ensure no React Query mutations, no backend actor usage, and no fetch/XHR usage occur. Verify the component's usage instructions before implementing."
         }
       ]
     },
     {
-      "id": "REQ-22",
-      "summary": "Call Google Custom Search JSON API from the frontend and add UI to configure/store API key and cx locally in the browser; show summary and optional top results with robust error handling.",
+      "id": "REQ-38",
+      "summary": "Remove all Tingi search wiring and unused Tingi-related frontend modules so the build contains no active Tingi search flow.",
       "acceptanceCriteria": [
-        "Tingi issues a request to the Google Custom Search JSON API for the user’s query (q) using an API key and a cx value.",
-        "If the API key and/or cx are missing, Tingi shows an English prompt to configure them and provides fields to enter/save them.",
-        "The API key and cx are stored locally in the browser (no backend storage required) and reused on refresh.",
-        "Tingi displays a short summary and (optionally) a compact list of the top results (title + link) when available.",
-        "If Google returns an error (quota, invalid key, network), the user sees an English error state that does not break the rest of the site."
+        "frontend/src/components/TingiWidget.tsx is removed or replaced such that it no longer imports or uses useTingiSearch and no longer renders Tingi branding or search-related UI.",
+        "frontend/src/hooks/useQueries.ts no longer exports useTingiSearch and is updated/cleaned up to avoid dead code related to Tingi search.",
+        "frontend/src/hooks/useTingiConfig.ts is removed or updated so it is not referenced by the UI (and no longer mentions backend Google Custom Search credential handling).",
+        "The frontend compiles without references to Tingi search types (e.g., TingiResponse) and without unused/empty placeholder search/humor modules being required at runtime."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/lib/googleCustomSearch.ts",
-          "operation": "create",
-          "description": "Add a small client wrapper to request Google Custom Search JSON API via fetch using provided apiKey + cx + query, returning normalized results (titles, links, snippets) and surfacing errors as user-friendly messages."
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Remove the Tingi search mutation (useTingiSearch) and any imports/types tied to Tingi search so no Tingi search logic remains in this hooks module."
         },
         {
           "path": "frontend/src/hooks/useTingiConfig.ts",
-          "operation": "create",
-          "description": "Implement a browser-local configuration hook to load/save Google apiKey and cx (e.g., localStorage), exposing getters/setters for the Tingi UI."
+          "operation": "delete",
+          "description": "Remove the unused Tingi configuration hook so it is not referenced by the UI and contains no credential/search-related language."
         },
         {
-          "path": "frontend/src/components/TingiWidget.tsx",
-          "operation": "modify",
-          "description": "Integrate Google search calls and configuration UI: if apiKey/cx missing, show English configuration prompt + fields to save locally; on submit, call Google search, render funny summary plus optional compact top results list (title + link), and render non-breaking error states for quota/invalid key/network. Verify the component's usage instructions before implementing."
+          "path": "frontend/src/lib/googleCustomSearch.ts",
+          "operation": "delete",
+          "description": "Remove the placeholder Google Custom Search frontend module so it cannot be accidentally imported or required at runtime."
+        },
+        {
+          "path": "frontend/src/lib/tingiHumor.ts",
+          "operation": "delete",
+          "description": "Remove the placeholder Tingi humor module so it cannot be accidentally imported or required at runtime."
         }
       ]
     },
     {
-      "id": "REQ-23",
-      "summary": "Add and use a generated static Tingi icon asset for the floating launcher button with accessible labeling.",
+      "id": "REQ-40",
+      "summary": "Render Piddu only within the unlocked + welcome-dismissed memories experience by swapping the widget in App shell at the existing gating point.",
       "acceptanceCriteria": [
-        "A new generated icon image exists in frontend/public/assets/generated and is used for the floating Tingi launcher button.",
-        "The icon is crisp at small sizes and works on light and dark backgrounds.",
-        "The launcher includes accessible alt text / aria-label that references “Tingi”."
+        "frontend/src/App.tsx no longer imports/renders TingiWidget and instead imports/renders the new Piddu widget at the same gating point (unlocked + welcome dismissed).",
+        "Piddu is not visible on the password gate screen or the welcome page screen.",
+        "The rest of the site layout (header, hero, submission form, memory list, footer) remains unchanged aside from the widget swap."
       ],
       "file_operations": [
         {
-          "path": "frontend/public/assets/generated/tingi-icon.dim_128x128.png",
-          "operation": "create",
-          "description": "Add the generated static icon asset: frontend/public/assets/generated/tingi-icon.dim_128x128.png."
-        },
-        {
-          "path": "frontend/src/components/TingiWidget.tsx",
+          "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Render the launcher icon using frontend/public/assets/generated/tingi-icon.dim_128x128.png and ensure accessible labeling (alt text / aria-label references “Tingi”) and good contrast on light/dark backgrounds. Verify the component's usage instructions before implementing."
+          "description": "Replace the TingiWidget import/render with PidduWidget, keeping it rendered only in the existing unlocked + welcome dismissed branch. Ensure Piddu does not appear on PasswordGate or WelcomePage screens, and keep the rest of the layout unchanged. Verify the component's usage instructions before implementing."
         }
       ]
     }

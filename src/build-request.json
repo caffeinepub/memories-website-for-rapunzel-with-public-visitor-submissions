@@ -1,111 +1,136 @@
 {
   "kind": "build_request",
-  "title": "Add bottom-right helper bot “Tingi” using Google Custom Search with funny summaries",
+  "title": "Replace Tingi with Piddu deterministic bot (no search/backend)",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-20",
-      "text": "Add a floating bottom-right corner helper widget named “Tingi” that is visible on the main memories experience (i.e., after the visitor passes the 4-digit password gate and dismisses the welcome page). The widget must use a small icon, open/close on click, and match the site’s existing warm Tailwind + shadcn visual theme.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-1",
-          "msg-2",
-          "msg-3"
-        ],
-        "quotes": [
-          "Can you add a small ai bot at the corner named as Tingi",
-          "Bottom right corner",
-          "a small icon"
-        ]
-      },
-      "acceptanceCriteria": [
-        "When the site is locked (password gate shown), Tingi is not visible.",
-        "When the welcome page is shown, Tingi is not visible.",
-        "When the main app UI is shown, a small Tingi icon is fixed in the bottom-right corner above content.",
-        "Clicking the icon toggles an accessible panel/dialog with a title “Tingi” and a close action.",
-        "All user-facing text in the widget is in English and styling is consistent with the existing warm theme."
-      ]
-    },
-    {
-      "id": "REQ-21",
-      "text": "Implement a simple chat-like interaction UI for Tingi where the visitor can type a question and submit it, see a loading state, and receive a short “funny” response. Since no LLMs are available, generate humor via deterministic templates (e.g., playful one-liners) combined with information extracted from Google results.",
+      "id": "REQ-36",
+      "text": "Remove the existing Tingi search assistant experience and replace it with a new bottom-right floating helper widget named “Piddu” that simulates a ChatGPT-style chat experience using deterministic/scripted behavior only, with a fully new UI look.",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-4",
-          "msg-5"
+          "msg-8",
+          "msg-10"
         ],
         "quotes": [
-          "talk in a funny way with user and help in solving their problems",
-          "Give a short funny summary"
+          "Can remove Tingi and add a new bot like chat gpt in place of it and name it piddu",
+          "Simulated and deterministic bot",
+          "No \nYes"
         ]
       },
       "acceptanceCriteria": [
-        "The Tingi UI includes an input field and a Send button (or equivalent) to submit a question.",
-        "While fetching results, the UI shows a clear loading indicator and disables repeated submits.",
-        "On success, Tingi displays a short funny summary response based on the fetched information.",
-        "On error, Tingi shows a clear English error message and allows retry.",
-        "The interaction is usable on mobile and desktop (panel doesn’t overflow screen; content scrolls if needed)."
+        "The main memories experience (after password gate + welcome page dismissal) shows a floating bottom-right launcher for “Piddu”.",
+        "The widget’s visible name is “Piddu” (not “Tingi”) in the launcher aria-labels, dialog header/title, and any empty/welcome text.",
+        "Piddu’s UI styling/layout is clearly different from the existing TingiWidget look (new visual design while still matching the site’s warm theme and shadcn/Tailwind patterns).",
+        "All user-facing text in the Piddu widget is in English and does not reference Google, chrome.com, or searching.",
+        "The widget supports: open/close, message history, user input, send action, and a loading state before showing a deterministic response."
       ]
     },
     {
-      "id": "REQ-22",
-      "text": "Integrate Tingi with the Google Custom Search JSON API to fetch information for a user query and use it to produce the short funny summary. The implementation must call the Google Custom Search endpoint from the frontend and support configuring the required Google API key and Custom Search Engine ID (cx) from the UI (stored locally in the browser).",
+      "id": "REQ-37",
+      "text": "Implement Piddu’s responses entirely on the frontend using deterministic logic (no LLM calls, no external APIs, and no backend calls).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-8",
+          "msg-10"
+        ],
+        "quotes": [
+          "Simulated and deterministic bot",
+          "No"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Submitting a message never triggers network requests for search/summarization (no calls to backend search endpoints and no calls to Google Custom Search).",
+        "Piddu returns responses generated from deterministic/scripted templates (e.g., pattern-based replies) and consistently works offline once the app is loaded.",
+        "The UI shows an in-progress/loading indicator between send and response, even though the response is deterministic."
+      ]
+    },
+    {
+      "id": "REQ-38",
+      "text": "Remove Tingi search wiring from the frontend, including the React Query mutation hook and any unused Tingi configuration/search helper modules, so the build contains no active Tingi search flow.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-10"
+        ],
+        "quotes": [
+          "No"
+        ]
+      },
+      "acceptanceCriteria": [
+        "frontend/src/components/TingiWidget.tsx is removed or replaced such that it no longer imports or uses useTingiSearch and no longer renders Tingi branding or search-related UI.",
+        "frontend/src/hooks/useQueries.ts no longer exports useTingiSearch and is updated/cleaned up to avoid dead code related to Tingi search.",
+        "frontend/src/hooks/useTingiConfig.ts is removed or updated so it is not referenced by the UI (and no longer mentions backend Google Custom Search credential handling).",
+        "The frontend compiles without references to Tingi search types (e.g., TingiResponse) and without unused/empty placeholder search/humor modules being required at runtime."
+      ]
+    },
+    {
+      "id": "REQ-39",
+      "text": "Remove the Tingi Google Custom Search backend API and HTTP outcall logic from the Motoko canister so the backend provides no search/summarizing functionality for the helper bot.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-10"
+        ],
+        "quotes": [
+          "No"
+        ]
+      },
+      "acceptanceCriteria": [
+        "backend/main.mo no longer exposes performTingiSearch or any TingiResponse type used for Google Custom Search results.",
+        "backend/main.mo removes the Google Custom Search API key and CX usage from executable code paths.",
+        "If the HTTP outcall transform helper becomes unused after removing search, it is removed as well (or left only if required elsewhere).",
+        "The canister still builds and the memories APIs (submitMemory/getMemory/getAllMemories) continue to work as before."
+      ]
+    },
+    {
+      "id": "REQ-40",
+      "text": "Update the app shell to render the new Piddu widget (instead of TingiWidget) only in the main memories experience (after the visitor unlocks with the 4-digit code and dismisses the welcome page).",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-6",
-          "msg-7"
+          "msg-10"
         ],
         "quotes": [
-          "Using Google APIs",
-          "Google custom search API"
+          "Yes",
+          "No \nYes"
         ]
       },
       "acceptanceCriteria": [
-        "Tingi issues a request to the Google Custom Search JSON API for the user’s query (q) using an API key and a cx value.",
-        "If the API key and/or cx are missing, Tingi shows an English prompt to configure them and provides fields to enter/save them.",
-        "The API key and cx are stored locally in the browser (no backend storage required) and reused on refresh.",
-        "Tingi displays a short summary and (optionally) a compact list of the top results (title + link) when available.",
-        "If Google returns an error (quota, invalid key, network), the user sees an English error state that does not break the rest of the site."
-      ]
-    },
-    {
-      "id": "REQ-23",
-      "text": "Add generated static image assets for Tingi’s icon and render it in the Tingi widget.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-3"
-        ],
-        "quotes": [
-          "a small icon"
-        ]
-      },
-      "acceptanceCriteria": [
-        "A new generated icon image exists in frontend/public/assets/generated and is used for the floating Tingi launcher button.",
-        "The icon is crisp at small sizes and works on light and dark backgrounds.",
-        "The launcher includes accessible alt text / aria-label that references “Tingi”."
+        "frontend/src/App.tsx no longer imports/renders TingiWidget and instead imports/renders the new Piddu widget at the same gating point (unlocked + welcome dismissed).",
+        "Piddu is not visible on the password gate screen or the welcome page screen.",
+        "The rest of the site layout (header, hero, submission form, memory list, footer) remains unchanged aside from the widget swap."
       ]
     }
   ],
   "constraints": [
-    "Do not modify any files under frontend/src/components/ui (shadcn components must be composed, not edited).",
-    "Do not edit files listed in frontend.immutablePaths (compose around them instead).",
-    "Do not add LLM/AI service integrations (responses must be template-based).",
-    "Backend must remain a single Motoko actor; do not add additional backend services."
+    "Do not integrate any real LLM provider (OpenAI/ChatGPT/Anthropic/etc.); Piddu must be simulated/deterministic only.",
+    "Do not add any UI that allows visitors to view, edit, or store any API credentials.",
+    "Respect frontend immutable paths listed in SYSTEM_CONTEXT (do not modify those files).",
+    "Backend must remain a single Motoko actor in backend/main.mo; add migration.mo only if state schema changes (not expected for this change)."
   ],
   "nonGoals": [
-    "Implementing real-time chat, WebSockets, or push notifications.",
-    "Adding third-party authentication beyond Internet Identity.",
-    "Storing Google API keys securely on the backend (this build will use browser-local storage/configuration only).",
-    "Implementing advanced conversational AI beyond deterministic funny templates."
+    "Implementing real ChatGPT-style AI or calling any external LLM services.",
+    "Adding real-time communication (WebSockets) or multi-user chat.",
+    "Adding/keeping Google Custom Search functionality or any search-based summarization for the bot."
   ],
   "imageRequirements": {
     "required": [
-      "Cute friendly mini robot mascot icon, warm palette, simple silhouette, transparent background (tingi-icon.dim_128x128.png)"
+      "Rounded friendly mascot icon illustration (piddu-icon.dim_128x128.png)"
     ],
     "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
   }
 }

@@ -2,7 +2,7 @@ import { MemorySubmitForm } from './components/MemorySubmitForm';
 import { MemoryList } from './components/MemoryList';
 import { PasswordGate } from './components/PasswordGate';
 import { WelcomePage } from './components/WelcomePage';
-import { TingiWidget } from './components/TingiWidget';
+import { PidduWidget } from './components/PidduWidget';
 import { useMemories } from './hooks/useMemories';
 import { usePasswordGate } from './hooks/usePasswordGate';
 import { useWelcomeGate } from './hooks/useWelcomeGate';
@@ -156,8 +156,8 @@ function App() {
         </div>
       </footer>
 
-      {/* Tingi Widget - Only visible when unlocked and welcome dismissed */}
-      <TingiWidget />
+      {/* Piddu Widget - Only visible when unlocked and welcome dismissed */}
+      <PidduWidget />
     </div>
   );
 }

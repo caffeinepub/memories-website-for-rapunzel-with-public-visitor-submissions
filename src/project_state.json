@@ -1,16 +1,16 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 13,
-  "summary": "Website for collecting and displaying written memories of a friend named Rapunzel, with visitors able to submit their own memories including uploading/attaching pictures and videos, protected by a simple front-end 4-digit password gate (5699) and showing a welcome page after unlocking; additionally includes a bottom-right corner helper bot named “Tingi” with a small generated icon that uses Google APIs (Custom Search) to provide short, funny summaries to help users.",
+  "projectStateVersion": 23,
+  "summary": "Website for collecting and displaying written memories of a friend named Rapunzel, with visitors able to submit their own memories including uploading/attaching pictures and videos, protected by a simple front-end 4-digit password gate (5699) and showing a welcome page after unlocking; additionally includes a bottom-right corner helper bot named “Piddu” (replacing Tingi) which is a simulated/deterministic chat-style bot with a new UI look and no Google Custom Search or backend search/summarizing functionality.",
   "architectural_notes": [
     "Password protection requested is front-end only (not secure access control); it hides content in the UI until the correct 4-digit code is entered.",
     "Image selection should use standard browser file picker (<input type=\"file\">); browsers do not support deeper device-level storage permissions.",
     "Video uploads should use standard browser file picker (<input type=\"file\" accept=\"video/*\">) and store the selected video as a data URL; videos should not autoplay and should only play when the memory card is opened.",
-    "Tingi bot: bottom-right widget with generated icon; integrates with Google Custom Search API to fetch results and respond with short, funny summaries (requires Google API key and Custom Search Engine ID; do not expose secrets in frontend)."
+    "Piddu bot replaces Tingi: bottom-right widget with a new UI look; simulated/deterministic responses only (no real LLM integration) and no Google Custom Search / no backend search or summarizing."
   ],
   "known_issues": [],
   "isFixRequest": false,
-  "imageRequirements": "## Required Images\n- Cute friendly mini robot mascot icon, warm palette, simple silhouette, transparent background (tingi-icon.dim_128x128.png)",
+  "imageRequirements": "## Required Images\n- Rounded friendly mascot icon illustration (piddu-icon.dim_128x128.png)",
   "existing_features": [
     {
       "id": "feature-create-a-public-website-focused-on-written-memories-of-a-friend-named-rapunzel-with-a-landing-view-that-introduces-the-site-and-shows-a-readable-list-of-submitted-memories",
@@ -179,6 +179,118 @@
         "REQ-23"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-remove-the-google-api-key-and-search-engine-id-cx-configuration-ui-from-the-tingi-widget-so-visitors-can-no-longer-enter-or-save-these-values-in-the-browser",
+      "title": "Remove the Google API Key and Search Engine ID (cx) configuration UI from the Tingi widget so visitors can no longer enter or save these values in the browser.",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-tingi-to-use-hard-coded-google-custom-search-credentials-including-hard-coding-the-provided-google-api-key-aizasybuccr7sqcfn00ltgomjgqjqbvl42guj7i-in-the-frontend-code-path-used-to-perform-searches",
+      "title": "Update Tingi to use hard-coded Google Custom Search credentials, including hard-coding the provided Google API key \"AIzaSyBUCcr7sqCfN00LtGOmJgQjqBvL42gUj7I\" in the frontend code path used to perform searches.",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-configure-tingi-s-google-custom-search-requests-so-the-information-source-is-google-com-i-e-searches-are-constrained-to-google-com-while-still-using-the-google-custom-search-json-api-endpoint",
+      "title": "Configure Tingi’s Google Custom Search requests so the information source is google.com (i.e., searches are constrained to google.com) while still using the Google Custom Search JSON API endpoint.",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-tingi-s-search-implementation-to-use-chrome-com-as-the-information-source-replacing-the-current-google-com-only-behavior-and-remove-all-google-com-specific-restrictions-filters-from-the-search-request-and-result-processing",
+      "title": "Update Tingi’s search implementation to use chrome.com as the information source (replacing the current google.com-only behavior), and remove all google.com-specific restrictions/filters from the search request and result processing.",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-tingi-s-user-facing-text-and-error-messaging-to-reflect-the-chrome-com-information-source-instead-of-google-google-com-including-the-first-open-welcome-message-the-empty-state-prompt-and-any-special-no-results-due-to-site-restriction-messaging",
+      "title": "Update Tingi’s user-facing text and error messaging to reflect the chrome.com information source instead of Google/google.com, including the first-open welcome message, the empty-state prompt, and any special “no results due to site restriction” messaging.",
+      "reqIds": [
+        "REQ-28"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-any-domain-source-restriction-from-tingi-s-google-custom-search-requests-so-searches-are-not-constrained-to-chrome-com-or-google-com-i-e-do-not-set-sitesearch-sitesearchfilter-or-any-equivalent-restriction",
+      "title": "Remove any domain/source restriction from Tingi’s Google Custom Search requests so searches are not constrained to chrome.com or google.com (i.e., do not set siteSearch/siteSearchFilter or any equivalent restriction).",
+      "reqIds": [
+        "REQ-29"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-keep-tingi-s-google-custom-search-credentials-hard-coded-exactly-as-previously-provided-api-key-and-cx-and-do-not-add-any-ui-that-allows-visitors-to-change-or-store-them",
+      "title": "Keep Tingi’s Google Custom Search credentials hard-coded exactly as previously provided (API key and CX) and do not add any UI that allows visitors to change or store them.",
+      "reqIds": [
+        "REQ-30"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-tingi-s-user-facing-text-and-error-messaging-to-remove-chrome-com-and-google-com-references-now-that-searches-are-not-restricted-to-any-single-source",
+      "title": "Update Tingi’s user-facing text and error messaging to remove chrome.com and google.com references now that searches are not restricted to any single source.",
+      "reqIds": [
+        "REQ-31"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-tingiwidget-frontend-to-call-the-new-motoko-backend-api-for-searches-and-stop-calling-google-custom-search-directly-from-the-browser",
+      "title": "Update the TingiWidget frontend to call the new Motoko backend API for searches and stop calling Google Custom Search directly from the browser.",
+      "reqIds": [
+        "REQ-34"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-no-ui-is-added-that-allows-visitors-to-view-edit-or-store-google-api-credentials-credentials-must-remain-hard-coded-and-non-configurable",
+      "title": "Ensure no UI is added that allows visitors to view, edit, or store Google API credentials; credentials must remain hard-coded and non-configurable.",
+      "reqIds": [
+        "REQ-35"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-the-existing-tingi-search-assistant-experience-and-replace-it-with-a-new-bottom-right-floating-helper-widget-named-piddu-that-simulates-a-chatgpt-style-chat-experience-using-deterministic-scripted-behavior-only-with-a-fully-new-ui-look",
+      "title": "Remove the existing Tingi search assistant experience and replace it with a new bottom-right floating helper widget named “Piddu” that simulates a ChatGPT-style chat experience using deterministic/scripted behavior only, with a fully new UI look.",
+      "reqIds": [
+        "REQ-36"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-piddu-s-responses-entirely-on-the-frontend-using-deterministic-logic-no-llm-calls-no-external-apis-and-no-backend-calls",
+      "title": "Implement Piddu’s responses entirely on the frontend using deterministic logic (no LLM calls, no external APIs, and no backend calls).",
+      "reqIds": [
+        "REQ-37"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-tingi-search-wiring-from-the-frontend-including-the-react-query-mutation-hook-and-any-unused-tingi-configuration-search-helper-modules-so-the-build-contains-no-active-tingi-search-flow",
+      "title": "Remove Tingi search wiring from the frontend, including the React Query mutation hook and any unused Tingi configuration/search helper modules, so the build contains no active Tingi search flow.",
+      "reqIds": [
+        "REQ-38"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-app-shell-to-render-the-new-piddu-widget-instead-of-tingiwidget-only-in-the-main-memories-experience-after-the-visitor-unlocks-with-the-4-digit-code-and-dismisses-the-welcome-page",
+      "title": "Update the app shell to render the new Piddu widget (instead of TingiWidget) only in the main memories experience (after the visitor unlocks with the 4-digit code and dismisses the welcome page).",
+      "reqIds": [
+        "REQ-40"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -241,9 +353,17 @@
       "status": "pending"
     },
     {
-      "id": "AR-11",
-      "summary": "Add a bottom-right corner helper bot named “Tingi” with a small generated icon; users can interact with it and it uses Google Custom Search API (and/or other Google APIs) to return short, funny summaries/help.",
+      "id": "AR-21",
+      "summary": "Remove Tingi and replace it with a bottom-right corner helper bot named “Piddu” that simulates a ChatGPT-style experience using deterministic/scripted behavior only (no real LLM integration), with a fully new UI look and no search/summarizing backend functionality.",
       "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-25",
+      "summary": "Remove the Tingi Google Custom Search backend API and HTTP outcall logic from the Motoko canister so the backend provides no search/summarizing functionality for the helper bot.",
+      "reqIds": [
+        "REQ-39"
+      ],
       "status": "pending"
     }
   ],

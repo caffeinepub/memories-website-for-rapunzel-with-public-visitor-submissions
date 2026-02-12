@@ -1,14 +1,13 @@
 # Specification
 
 ## Summary
-**Goal:** Add a bottom-right helper bot widget (“Tingi”) to the main memories experience that can answer questions using Google Custom Search and return short funny summaries.
+**Goal:** Replace the existing Tingi search assistant with a new bottom-right floating helper widget named “Piddu” that provides a deterministic, scripted chat experience (no search, no backend/LLM calls) and a fully new UI look.
 
 **Planned changes:**
-- Add a floating bottom-right Tingi launcher icon that appears only after the password gate and after the welcome page is dismissed.
-- Implement an open/close Tingi panel/dialog with accessible title, close action, and warm theme-consistent styling.
-- Add a simple chat-like UI (question input + send), with loading/disabled states, error handling, and mobile/desktop-safe layout.
-- Integrate Google Custom Search JSON API calls from the frontend and add in-widget fields to configure/save API key and cx in browser local storage.
-- Display a short funny, template-based summary derived from Google results (and optionally a compact list of top results: title + link).
-- Add and use a generated static icon image asset for the Tingi launcher button with appropriate alt/aria labeling.
+- Remove/replace the existing Tingi widget UI and introduce a new “Piddu” floating chat widget with a distinct visual design (open/close, message history, input, send, loading state).
+- Implement deterministic/scripted response logic entirely on the frontend with no network requests triggered by chat messages.
+- Remove Tingi search wiring from the frontend (React Query hook/export, config/search helper modules, and any remaining Tingi search types/usages).
+- Remove the Tingi Google Custom Search API and HTTP outcall logic from the Motoko backend so no search/summarization endpoints remain, while keeping existing memories APIs working.
+- Update the app shell to render the Piddu widget only in the main memories experience (after the 4-digit unlock and welcome dismissal), leaving the rest of the layout unchanged.
 
-**User-visible outcome:** After entering the site and dismissing the welcome page, visitors can open the Tingi helper in the bottom-right corner, configure Google search credentials if needed, ask a question, and receive a short funny summary based on Google search results.
+**User-visible outcome:** After unlocking and dismissing the welcome page, visitors see a new “Piddu” chat-style helper launcher in the bottom-right that can chat using deterministic scripted replies (with a loading indicator), with no search or backend-powered responses.
