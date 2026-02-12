@@ -1,0 +1,111 @@
+{
+  "kind": "build_request",
+  "title": "Add bottom-right helper bot “Tingi” using Google Custom Search with funny summaries",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-20",
+      "text": "Add a floating bottom-right corner helper widget named “Tingi” that is visible on the main memories experience (i.e., after the visitor passes the 4-digit password gate and dismisses the welcome page). The widget must use a small icon, open/close on click, and match the site’s existing warm Tailwind + shadcn visual theme.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1",
+          "msg-2",
+          "msg-3"
+        ],
+        "quotes": [
+          "Can you add a small ai bot at the corner named as Tingi",
+          "Bottom right corner",
+          "a small icon"
+        ]
+      },
+      "acceptanceCriteria": [
+        "When the site is locked (password gate shown), Tingi is not visible.",
+        "When the welcome page is shown, Tingi is not visible.",
+        "When the main app UI is shown, a small Tingi icon is fixed in the bottom-right corner above content.",
+        "Clicking the icon toggles an accessible panel/dialog with a title “Tingi” and a close action.",
+        "All user-facing text in the widget is in English and styling is consistent with the existing warm theme."
+      ]
+    },
+    {
+      "id": "REQ-21",
+      "text": "Implement a simple chat-like interaction UI for Tingi where the visitor can type a question and submit it, see a loading state, and receive a short “funny” response. Since no LLMs are available, generate humor via deterministic templates (e.g., playful one-liners) combined with information extracted from Google results.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4",
+          "msg-5"
+        ],
+        "quotes": [
+          "talk in a funny way with user and help in solving their problems",
+          "Give a short funny summary"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The Tingi UI includes an input field and a Send button (or equivalent) to submit a question.",
+        "While fetching results, the UI shows a clear loading indicator and disables repeated submits.",
+        "On success, Tingi displays a short funny summary response based on the fetched information.",
+        "On error, Tingi shows a clear English error message and allows retry.",
+        "The interaction is usable on mobile and desktop (panel doesn’t overflow screen; content scrolls if needed)."
+      ]
+    },
+    {
+      "id": "REQ-22",
+      "text": "Integrate Tingi with the Google Custom Search JSON API to fetch information for a user query and use it to produce the short funny summary. The implementation must call the Google Custom Search endpoint from the frontend and support configuring the required Google API key and Custom Search Engine ID (cx) from the UI (stored locally in the browser).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-6",
+          "msg-7"
+        ],
+        "quotes": [
+          "Using Google APIs",
+          "Google custom search API"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Tingi issues a request to the Google Custom Search JSON API for the user’s query (q) using an API key and a cx value.",
+        "If the API key and/or cx are missing, Tingi shows an English prompt to configure them and provides fields to enter/save them.",
+        "The API key and cx are stored locally in the browser (no backend storage required) and reused on refresh.",
+        "Tingi displays a short summary and (optionally) a compact list of the top results (title + link) when available.",
+        "If Google returns an error (quota, invalid key, network), the user sees an English error state that does not break the rest of the site."
+      ]
+    },
+    {
+      "id": "REQ-23",
+      "text": "Add generated static image assets for Tingi’s icon and render it in the Tingi widget.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "a small icon"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A new generated icon image exists in frontend/public/assets/generated and is used for the floating Tingi launcher button.",
+        "The icon is crisp at small sizes and works on light and dark backgrounds.",
+        "The launcher includes accessible alt text / aria-label that references “Tingi”."
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not modify any files under frontend/src/components/ui (shadcn components must be composed, not edited).",
+    "Do not edit files listed in frontend.immutablePaths (compose around them instead).",
+    "Do not add LLM/AI service integrations (responses must be template-based).",
+    "Backend must remain a single Motoko actor; do not add additional backend services."
+  ],
+  "nonGoals": [
+    "Implementing real-time chat, WebSockets, or push notifications.",
+    "Adding third-party authentication beyond Internet Identity.",
+    "Storing Google API keys securely on the backend (this build will use browser-local storage/configuration only).",
+    "Implementing advanced conversational AI beyond deterministic funny templates."
+  ],
+  "imageRequirements": {
+    "required": [
+      "Cute friendly mini robot mascot icon, warm palette, simple silhouette, transparent background (tingi-icon.dim_128x128.png)"
+    ],
+    "edits": []
+  }
+}

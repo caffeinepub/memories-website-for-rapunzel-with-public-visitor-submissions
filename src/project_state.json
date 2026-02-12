@@ -1,0 +1,254 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 13,
+  "summary": "Website for collecting and displaying written memories of a friend named Rapunzel, with visitors able to submit their own memories including uploading/attaching pictures and videos, protected by a simple front-end 4-digit password gate (5699) and showing a welcome page after unlocking; additionally includes a bottom-right corner helper bot named “Tingi” with a small generated icon that uses Google APIs (Custom Search) to provide short, funny summaries to help users.",
+  "architectural_notes": [
+    "Password protection requested is front-end only (not secure access control); it hides content in the UI until the correct 4-digit code is entered.",
+    "Image selection should use standard browser file picker (<input type=\"file\">); browsers do not support deeper device-level storage permissions.",
+    "Video uploads should use standard browser file picker (<input type=\"file\" accept=\"video/*\">) and store the selected video as a data URL; videos should not autoplay and should only play when the memory card is opened.",
+    "Tingi bot: bottom-right widget with generated icon; integrates with Google Custom Search API to fetch results and respond with short, funny summaries (requires Google API key and Custom Search Engine ID; do not expose secrets in frontend)."
+  ],
+  "known_issues": [],
+  "isFixRequest": false,
+  "imageRequirements": "## Required Images\n- Cute friendly mini robot mascot icon, warm palette, simple silhouette, transparent background (tingi-icon.dim_128x128.png)",
+  "existing_features": [
+    {
+      "id": "feature-create-a-public-website-focused-on-written-memories-of-a-friend-named-rapunzel-with-a-landing-view-that-introduces-the-site-and-shows-a-readable-list-of-submitted-memories",
+      "title": "Create a public website focused on written memories of a friend named “Rapunzel”, with a landing view that introduces the site and shows a readable list of submitted memories.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-public-submission-flow-for-visitors-to-write-and-submit-new-memories-from-the-ui-without-requiring-login-include-form-validation-required-memory-text-reasonable-max-length-and-clear-success-error-messaging-in-english",
+      "title": "Add a public submission flow for visitors to write and submit new memories from the UI, without requiring login. Include form validation (required memory text, reasonable max length) and clear success/error messaging in English.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-basic-content-presentation-features-for-the-memories-list-show-newest-first-ordering-and-display-the-created-date-time-in-a-human-friendly-format-ensure-long-memories-wrap-and-remain-readable",
+      "title": "Add basic content presentation features for the memories list: show newest-first ordering and display the created date/time in a human-friendly format; ensure long memories wrap and remain readable.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-a-coherent-creative-visual-theme-suitable-for-a-warm-memory-book-site-distinct-color-palette-typography-spacing-and-card-list-styling-and-use-it-consistently-across-the-landing-list-and-submission-form-do-not-use-a-blue-purple-dominant-palette",
+      "title": "Apply a coherent, creative visual theme suitable for a warm “memory book” site (distinct color palette, typography, spacing, and card/list styling) and use it consistently across the landing, list, and submission form. Do not use a blue/purple dominant palette.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-generated-static-images-and-use-them-in-the-ui-served-from-frontend-public-assets-generated-including-a-hero-banner-image-for-the-landing-section-and-a-small-decorative-icon-used-in-the-header-or-memory-cards",
+      "title": "Add generated static images and use them in the UI (served from frontend/public/assets/generated), including a hero banner image for the landing section and a small decorative icon used in the header or memory cards.",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-memory-submission-ui-to-allow-visitors-to-optionally-add-a-picture-url-and-a-video-url-when-submitting-a-memory-with-clear-english-labels-and-validation",
+      "title": "Update the memory submission UI to allow visitors to optionally add a picture URL and a video URL when submitting a memory, with clear English labels and validation.",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-memories-list-ui-to-display-attached-pictures-and-videos-on-each-memory-card-when-present-in-a-readable-layout-that-works-on-mobile-and-desktop",
+      "title": "Update the memories list UI to display attached pictures and videos on each memory card when present, in a readable layout that works on mobile and desktop.",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-front-end-password-gate-that-blocks-all-website-content-until-the-visitor-enters-the-exact-4-digit-code-5699",
+      "title": "Add a front-end password gate that blocks all website content until the visitor enters the exact 4-digit code \"5699\".",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-persist-the-unlocked-state-in-the-browser-so-a-visitor-who-has-already-entered-5699-does-not-have-to-re-enter-it-on-refresh-during-the-same-browser-session-and-provide-a-lock-action-to-re-hide-the-site-content",
+      "title": "Persist the unlocked state in the browser so a visitor who has already entered \"5699\" does not have to re-enter it on refresh during the same browser session, and provide a \"Lock\" action to re-hide the site content.",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-the-password-gate-ui-matches-the-existing-warm-visual-theme-tailwind-shadcn-components-and-uses-clear-accessible-english-labels-and-helper-text",
+      "title": "Ensure the password gate UI matches the existing warm visual theme (Tailwind + shadcn components) and uses clear, accessible English labels and helper text.",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-optional-image-upload-control-to-the-memory-submission-form-that-lets-visitors-pick-an-image-from-their-device-using-a-standard-browser-file-picker-and-submit-it-with-the-memory",
+      "title": "Add an optional image upload control to the memory submission form that lets visitors pick an image from their device using a standard browser file picker, and submit it with the memory.",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-uploaded-images-submitted-as-data-urls-render-correctly-in-the-memories-list-ui",
+      "title": "Ensure uploaded images submitted as data URLs render correctly in the memories list UI.",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-welcome-page-that-is-shown-immediately-after-the-visitor-successfully-unlocks-the-site-after-the-4-digit-code-screen-and-before-showing-the-main-memories-experience",
+      "title": "Add a welcome page that is shown immediately after the visitor successfully unlocks the site (after the 4-digit code screen) and before showing the main memories experience.",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-persist-welcome-page-completion-for-the-current-browser-session-so-the-welcome-page-is-not-repeatedly-shown-after-it-has-been-dismissed-unless-the-visitor-locks-the-site-again",
+      "title": "Persist welcome-page completion for the current browser session so the welcome page is not repeatedly shown after it has been dismissed, unless the visitor locks the site again.",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-optional-video-file-picker-to-the-memory-submission-form-that-lets-visitors-select-a-video-from-their-device-and-submit-it-as-a-data-url-stored-in-the-existing-memory-videourl-field",
+      "title": "Add an optional video file picker to the memory submission form that lets visitors select a video from their device and submit it as a data URL stored in the existing memory videoUrl field.",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-client-side-validation-and-ux-for-the-uploaded-video-file-size-type-checks-remove-action-and-a-lightweight-selection-summary-consistent-with-the-existing-image-upload-ux",
+      "title": "Add client-side validation and UX for the uploaded video file (size/type checks, remove action, and a lightweight selection summary) consistent with the existing image upload UX.",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-change-memory-card-video-behavior-so-videos-are-only-playable-when-the-visitor-explicitly-opens-them-rather-than-being-immediately-playable-inline-in-the-card",
+      "title": "Change memory card video behavior so videos are only playable when the visitor explicitly opens them, rather than being immediately playable inline in the card.",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-floating-bottom-right-corner-helper-widget-named-tingi-that-is-visible-on-the-main-memories-experience-i-e-after-the-visitor-passes-the-4-digit-password-gate-and-dismisses-the-welcome-page-the-widget-must-use-a-small-icon-open-close-on-click-and-match-the-site-s-existing-warm-tailwind-shadcn-visual-theme",
+      "title": "Add a floating bottom-right corner helper widget named “Tingi” that is visible on the main memories experience (i.e., after the visitor passes the 4-digit password gate and dismisses the welcome page). The widget must use a small icon, open/close on click, and match the site’s existing warm Tailwind + shadcn visual theme.",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-simple-chat-like-interaction-ui-for-tingi-where-the-visitor-can-type-a-question-and-submit-it-see-a-loading-state-and-receive-a-short-funny-response-since-no-llms-are-available-generate-humor-via-deterministic-templates-e-g-playful-one-liners-combined-with-information-extracted-from-google-results",
+      "title": "Implement a simple chat-like interaction UI for Tingi where the visitor can type a question and submit it, see a loading state, and receive a short “funny” response. Since no LLMs are available, generate humor via deterministic templates (e.g., playful one-liners) combined with information extracted from Google results.",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-integrate-tingi-with-the-google-custom-search-json-api-to-fetch-information-for-a-user-query-and-use-it-to-produce-the-short-funny-summary-the-implementation-must-call-the-google-custom-search-endpoint-from-the-frontend-and-support-configuring-the-required-google-api-key-and-custom-search-engine-id-cx-from-the-ui-stored-locally-in-the-browser",
+      "title": "Integrate Tingi with the Google Custom Search JSON API to fetch information for a user query and use it to produce the short funny summary. The implementation must call the Google Custom Search endpoint from the frontend and support configuring the required Google API key and Custom Search Engine ID (cx) from the UI (stored locally in the browser).",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-generated-static-image-assets-for-tingi-s-icon-and-render-it-in-the-tingi-widget",
+      "title": "Add generated static image assets for Tingi’s icon and render it in the Tingi widget.",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Create a website containing written memories of a friend named Rapunzel",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Allow visitors to write/submit their own memories (public submissions)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Implement backend data storage for memories so that submissions persist and can be retrieved later. Each memory must store: a unique id, the memory text, a created timestamp, and optional author name (free text).",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Add support for pictures and videos in memories (e.g., additional fields/columns for media attachments and displaying them on the site)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Extend the backend Memory data model to support optional picture and video attachments by adding optional fields for an image URL and a video URL, and update backend APIs so submitted and retrieved memories include these fields.",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Add a simple front-end 4-digit password gate (code: 5699) that users must enter before accessing the website content",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Allow visitors to upload an image from their device via a standard browser file picker when submitting a memory (instead of only providing an image URL).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Add a welcome page shown immediately after the lock screen unlock, containing text, images, and buttons, before entering the main memories experience.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Add optional video upload via standard browser file picker on the memory submission form; store uploaded video as a data URL; only play videos when a memory card is opened.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-11",
+      "summary": "Add a bottom-right corner helper bot named “Tingi” with a small generated icon; users can interact with it and it uses Google Custom Search API (and/or other Google APIs) to return short, funny summaries/help.",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "Memories website for Rapunzel with public visitor submissions",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

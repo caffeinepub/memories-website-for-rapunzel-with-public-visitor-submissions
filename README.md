@@ -1,2 +1,3 @@
-# memories-website-for-rapunzel-with-public-visitor-submissions
-Exported from Caffeine project: Memories website for Rapunzel with public visitor submissions
+## 
+
+To run app build and run docker image: `docker build -t app . docker run -it --network host app`

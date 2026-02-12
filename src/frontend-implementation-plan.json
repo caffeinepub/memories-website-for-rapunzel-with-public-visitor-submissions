@@ -1,0 +1,102 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Bottom-right helper bot “Tingi” with Google Custom Search funny summaries",
+  "requirements": [
+    {
+      "id": "REQ-20",
+      "summary": "Add a floating bottom-right “Tingi” launcher that toggles an accessible panel and only appears in the main memories UI (not during password gate or welcome page).",
+      "acceptanceCriteria": [
+        "When the site is locked (password gate shown), Tingi is not visible.",
+        "When the welcome page is shown, Tingi is not visible.",
+        "When the main app UI is shown, a small Tingi icon is fixed in the bottom-right corner above content.",
+        "Clicking the icon toggles an accessible panel/dialog with a title “Tingi” and a close action.",
+        "All user-facing text in the widget is in English and styling is consistent with the existing warm theme."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/TingiWidget.tsx",
+          "operation": "create",
+          "description": "Create the floating launcher + open/close panel UI for Tingi using composed shadcn/ui primitives (e.g., Dialog, Button) to match the warm Tailwind theme; ensure accessibility (aria-label, focus handling). Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire TingiWidget into the main unlocked + welcome-dismissed render branch only (so it never renders on PasswordGate or WelcomePage); ensure it is positioned fixed bottom-right with appropriate z-index above content. Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-21",
+      "summary": "Implement a chat-like Tingi panel with input + send, loading/disabled state, error/retry, and deterministic humorous responses built from fetched search info.",
+      "acceptanceCriteria": [
+        "The Tingi UI includes an input field and a Send button (or equivalent) to submit a question.",
+        "While fetching results, the UI shows a clear loading indicator and disables repeated submits.",
+        "On success, Tingi displays a short funny summary response based on the fetched information.",
+        "On error, Tingi shows a clear English error message and allows retry.",
+        "The interaction is usable on mobile and desktop (panel doesn’t overflow screen; content scrolls if needed)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/TingiWidget.tsx",
+          "operation": "modify",
+          "description": "Add a simple chat-like interaction UI inside the Tingi panel (message transcript area with scrolling, input field, Send action, loading indicator, and error state with retry) using composed shadcn/ui components (e.g., Input/Textarea, Button, Alert). Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/lib/tingiHumor.ts",
+          "operation": "create",
+          "description": "Implement deterministic humor template helpers that generate short, playful English summaries by combining fixed one-liners with extracted snippets/titles from search results (no LLM usage)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-22",
+      "summary": "Call Google Custom Search JSON API from the frontend and add UI to configure/store API key and cx locally in the browser; show summary and optional top results with robust error handling.",
+      "acceptanceCriteria": [
+        "Tingi issues a request to the Google Custom Search JSON API for the user’s query (q) using an API key and a cx value.",
+        "If the API key and/or cx are missing, Tingi shows an English prompt to configure them and provides fields to enter/save them.",
+        "The API key and cx are stored locally in the browser (no backend storage required) and reused on refresh.",
+        "Tingi displays a short summary and (optionally) a compact list of the top results (title + link) when available.",
+        "If Google returns an error (quota, invalid key, network), the user sees an English error state that does not break the rest of the site."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/lib/googleCustomSearch.ts",
+          "operation": "create",
+          "description": "Add a small client wrapper to request Google Custom Search JSON API via fetch using provided apiKey + cx + query, returning normalized results (titles, links, snippets) and surfacing errors as user-friendly messages."
+        },
+        {
+          "path": "frontend/src/hooks/useTingiConfig.ts",
+          "operation": "create",
+          "description": "Implement a browser-local configuration hook to load/save Google apiKey and cx (e.g., localStorage), exposing getters/setters for the Tingi UI."
+        },
+        {
+          "path": "frontend/src/components/TingiWidget.tsx",
+          "operation": "modify",
+          "description": "Integrate Google search calls and configuration UI: if apiKey/cx missing, show English configuration prompt + fields to save locally; on submit, call Google search, render funny summary plus optional compact top results list (title + link), and render non-breaking error states for quota/invalid key/network. Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-23",
+      "summary": "Add and use a generated static Tingi icon asset for the floating launcher button with accessible labeling.",
+      "acceptanceCriteria": [
+        "A new generated icon image exists in frontend/public/assets/generated and is used for the floating Tingi launcher button.",
+        "The icon is crisp at small sizes and works on light and dark backgrounds.",
+        "The launcher includes accessible alt text / aria-label that references “Tingi”."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/public/assets/generated/tingi-icon.dim_128x128.png",
+          "operation": "create",
+          "description": "Add the generated static icon asset: frontend/public/assets/generated/tingi-icon.dim_128x128.png."
+        },
+        {
+          "path": "frontend/src/components/TingiWidget.tsx",
+          "operation": "modify",
+          "description": "Render the launcher icon using frontend/public/assets/generated/tingi-icon.dim_128x128.png and ensure accessible labeling (alt text / aria-label references “Tingi”) and good contrast on light/dark backgrounds. Verify the component's usage instructions before implementing."
+        }
+      ]
+    }
+  ]
+}

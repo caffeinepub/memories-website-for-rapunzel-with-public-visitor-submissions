@@ -1,0 +1,85 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-12T21:41:36.371Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 4,
+    "implemented": 4,
+    "items": [
+      {
+        "id": "REQ-20",
+        "summary": "Add a floating bottom-right corner helper widget named “Tingi” that is visible on the main memories experience (i.e., after the visitor passes the 4-digit password gate and dismisses the welcome page). The widget must use a small icon, open/close on click, and match the site’s existing warm Tailwind + shadcn visual theme.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/TingiWidget.tsx",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/TingiWidget.tsx",
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-21",
+        "summary": "Implement a simple chat-like interaction UI for Tingi where the visitor can type a question and submit it, see a loading state, and receive a short “funny” response. Since no LLMs are available, generate humor via deterministic templates (e.g., playful one-liners) combined with information extracted from Google results.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/TingiWidget.tsx",
+          "frontend/src/lib/tingiHumor.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/TingiWidget.tsx",
+          "frontend/src/lib/tingiHumor.ts"
+        ]
+      },
+      {
+        "id": "REQ-22",
+        "summary": "Integrate Tingi with the Google Custom Search JSON API to fetch information for a user query and use it to produce the short funny summary. The implementation must call the Google Custom Search endpoint from the frontend and support configuring the required Google API key and Custom Search Engine ID (cx) from the UI (stored locally in the browser).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/lib/googleCustomSearch.ts",
+          "frontend/src/hooks/useTingiConfig.ts",
+          "frontend/src/components/TingiWidget.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/lib/googleCustomSearch.ts",
+          "frontend/src/hooks/useTingiConfig.ts",
+          "frontend/src/components/TingiWidget.tsx"
+        ]
+      },
+      {
+        "id": "REQ-23",
+        "summary": "Add generated static image assets for Tingi’s icon and render it in the Tingi widget.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/public/assets/generated/tingi-icon.dim_128x128.png",
+          "frontend/src/components/TingiWidget.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/public/assets/generated/tingi-icon.dim_128x128.png",
+          "frontend/src/components/TingiWidget.tsx"
+        ]
+      }
+    ]
+  },
+  "changedFiles": [
+    "build-request.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/public/assets/generated/tingi-icon.dim_128x128.png",
+    "frontend/src/App.tsx",
+    "frontend/src/components/TingiWidget.tsx",
+    "frontend/src/hooks/useTingiConfig.ts",
+    "frontend/src/lib/googleCustomSearch.ts",
+    "frontend/src/lib/tingiHumor.ts",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}
