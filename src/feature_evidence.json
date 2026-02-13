@@ -2,13 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-add-a-new-full-page-chat-view-that-can-be-opened-in-a-separate-browser-tab-and-shows-the-same-shared-chat-timeline-read-messages-send-message-delete-own-message-s-multi-select-delete-using-the-existing-backend-react-query-chat-hooks",
-      "featureTitle": "Add a new full-page Chat view that can be opened in a separate browser tab and shows the same shared chat timeline (read messages, send message, delete own message(s), multi-select delete) using the existing backend + React Query chat hooks.",
+      "featureId": "feature-redeploy-the-application-using-the-current-codebase-no-feature-changes-and-ensure-the-deployment-completes-successfully",
+      "featureTitle": "Redeploy the application using the current codebase (no feature changes), and ensure the deployment completes successfully.",
       "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/components/ChatFullPage.tsx",
-        "frontend/src/components/ChatView.tsx",
-        "frontend/src/components/ChatWidget.tsx"
+        "frontend/REDEPLOY.md"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -20,49 +17,7 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-78"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-update-the-existing-bottom-right-floating-chat-launcher-behavior-so-it-opens-the-full-page-chat-view-in-a-new-browser-tab-while-keeping-the-existing-in-page-floating-chat-ui-available-alongside-it",
-      "featureTitle": "Update the existing bottom-right floating Chat launcher behavior so it opens the full-page Chat view in a new browser tab, while keeping the existing in-page floating chat UI available alongside it.",
-      "files": [
-        "frontend/src/components/ChatWidget.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "http-outcalls@3.0.0",
-        "authorization@4.0.0"
-      ],
-      "testIds": [
-        "REQ-79"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-ensure-the-new-tab-full-page-chat-view-can-access-the-current-session-s-unlocked-state-and-if-present-chat-display-name-without-requiring-the-user-to-re-enter-the-username-pin-solely-due-to-opening-a-new-tab",
-      "featureTitle": "Ensure the new-tab full-page Chat view can access the current session’s unlocked state and (if present) chat display name without requiring the user to re-enter the username/PIN solely due to opening a new tab.",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/hooks/useChatDisplayName.ts",
-        "frontend/src/hooks/usePasswordGate.ts"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "http-outcalls@3.0.0",
-        "authorization@4.0.0"
-      ],
-      "testIds": [
-        "REQ-80"
+        "REQ-83"
       ],
       "confidence": "high"
     }

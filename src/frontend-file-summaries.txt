@@ -30,5 +30,6 @@
   "frontend/src/components/ChatWidget.tsx": "Floating chat launcher button that opens full-page chat in a new tab via URL parameter; retains hidden in-page chat panel for alternative access alongside the new-tab flow.",
   "frontend/src/hooks/useChatDisplayName.ts": "Custom hook managing chat display name with dual persistence (sessionStorage + localStorage fallback) for cross-tab reuse, providing get/set/clear functions with validation.",
   "frontend/src/components/ChatView.tsx": "Reusable chat timeline component encapsulating shared chat UI (display-name prompt, message list with timestamps under text, send message, per-message delete, multi-select delete) using React Query hooks and shadcn-ui components with warm theme styling.",
-  "frontend/src/components/ChatFullPage.tsx": "Full-page chat container rendering ChatView in a dedicated responsive layout with header, close button that removes the view query parameter, and footer; uses shadcn-ui components for consistent warm theme styling."
+  "frontend/src/components/ChatFullPage.tsx": "Full-page chat container rendering ChatView in a dedicated responsive layout with header, close button that removes the view query parameter, and footer; uses shadcn-ui components for consistent warm theme styling.",
+  "frontend/REDEPLOY.md": "Non-functional marker file created to trigger a fresh deployment without changing application behavior; includes instructions for collecting deployment error logs if the deployment fails again."
 }

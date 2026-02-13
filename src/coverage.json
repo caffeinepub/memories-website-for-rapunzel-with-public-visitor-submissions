@@ -1,56 +1,24 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-13T22:45:33.505Z",
+  "generatedAt": "2026-02-13T23:08:18.479Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 3,
-    "implemented": 3,
+    "total": 1,
+    "implemented": 1,
     "items": [
       {
-        "id": "REQ-78",
-        "summary": "Add a new full-page Chat view that can be opened in a separate browser tab and shows the same shared chat timeline (read messages, send message, delete own message(s), multi-select delete) using the existing backend + React Query chat hooks.",
+        "id": "REQ-83",
+        "summary": "Redeploy the application using the current codebase (no feature changes), and ensure the deployment completes successfully.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/ChatView.tsx",
-          "frontend/src/components/ChatFullPage.tsx",
-          "frontend/src/App.tsx",
-          "frontend/src/components/ChatWidget.tsx"
+          "frontend/REDEPLOY.md"
         ],
         "matchedFiles": [
-          "frontend/src/components/ChatView.tsx",
-          "frontend/src/components/ChatFullPage.tsx",
-          "frontend/src/App.tsx",
-          "frontend/src/components/ChatWidget.tsx"
-        ]
-      },
-      {
-        "id": "REQ-79",
-        "summary": "Update the existing bottom-right floating Chat launcher behavior so it opens the full-page Chat view in a new browser tab, while keeping the existing in-page floating chat UI available alongside it.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/ChatWidget.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/ChatWidget.tsx"
-        ]
-      },
-      {
-        "id": "REQ-80",
-        "summary": "Ensure the new-tab full-page Chat view can access the current session’s unlocked state and (if present) chat display name without requiring the user to re-enter the username/PIN solely due to opening a new tab.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/hooks/usePasswordGate.ts",
-          "frontend/src/hooks/useChatDisplayName.ts",
-          "frontend/src/App.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/hooks/usePasswordGate.ts",
-          "frontend/src/hooks/useChatDisplayName.ts",
-          "frontend/src/App.tsx"
+          "frontend/REDEPLOY.md"
         ]
       }
     ]
@@ -60,12 +28,7 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/App.tsx",
-    "frontend/src/components/ChatFullPage.tsx",
-    "frontend/src/components/ChatView.tsx",
-    "frontend/src/components/ChatWidget.tsx",
-    "frontend/src/hooks/useChatDisplayName.ts",
-    "frontend/src/hooks/usePasswordGate.ts",
+    "frontend/REDEPLOY.md",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

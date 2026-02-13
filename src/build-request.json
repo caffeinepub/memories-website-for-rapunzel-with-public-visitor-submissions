@@ -1,92 +1,47 @@
 {
   "kind": "build_request",
-  "title": "Add full-page Chat view that opens in a new browser tab from the floating Chat widget",
+  "title": "Redeploy the current application build",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-78",
-      "text": "Add a new full-page Chat view that can be opened in a separate browser tab and shows the same shared chat timeline (read messages, send message, delete own message(s), multi-select delete) using the existing backend + React Query chat hooks.",
-      "target": "frontend",
+      "id": "REQ-83",
+      "text": "Redeploy the application using the current codebase (no feature changes), and ensure the deployment completes successfully.",
+      "target": "unknown",
       "source": {
         "messageIds": [
-          "msg-1",
-          "msg-2",
-          "msg-3",
-          "msg-4",
-          "msg-5"
+          "msg-2"
         ],
         "quotes": [
-          "Made the chat system open in new tab",
-          "exist alongside",
-          "Build it"
+          "Deploy again"
         ]
       },
       "acceptanceCriteria": [
-        "A dedicated full-page Chat UI exists (not a floating panel) and is reachable via a URL mode/parameter (e.g., a query param like view=chat or equivalent).",
-        "The full-page Chat UI supports: display-name requirement, viewing messages, sending messages, per-message delete for own messages, and multi-select delete for own messages, using the same shared timeline as the floating widget.",
-        "The full-page Chat UI shows message timestamps as time-only and places the timestamp under the message text (consistent with the existing widget behavior).",
-        "The full-page Chat UI uses the existing warm Tailwind/shadcn theme and remains readable on mobile and desktop."
-      ]
-    },
-    {
-      "id": "REQ-79",
-      "text": "Update the existing bottom-right floating Chat launcher behavior so it opens the full-page Chat view in a new browser tab, while keeping the existing in-page floating chat UI available alongside it.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-1",
-          "msg-2",
-          "msg-3",
-          "msg-4",
-          "msg-5"
-        ],
-        "quotes": [
-          "The floating chat widget should stay, clicking it should open the full chat UI in a new tab, and the in-page floating version should continue to exist alongside the new-tab version."
-        ]
-      },
-      "acceptanceCriteria": [
-        "Clicking the floating Chat launcher opens a new browser tab to the app’s full-page Chat view.",
-        "The in-page floating chat UI still exists and can still be opened/used in the original tab (it is not removed or replaced).",
-        "The new-tab Chat entry point does not overlap or interfere with the existing bottom-right Music Box launcher button or the YouTube Links floating button in the original tab."
-      ]
-    },
-    {
-      "id": "REQ-80",
-      "text": "Ensure the new-tab full-page Chat view can access the current session’s unlocked state and (if present) chat display name without requiring the user to re-enter the username/PIN solely due to opening a new tab.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-1",
-          "msg-2",
-          "msg-3",
-          "msg-4",
-          "msg-5"
-        ],
-        "quotes": [
-          "open in new tab",
-          "exist alongside"
-        ]
-      },
-      "acceptanceCriteria": [
-        "If the user is already unlocked in the original tab, opening the full-page Chat in a new tab results in the chat being usable without forcing a redundant unlock step that occurs only because it is a new tab.",
-        "If the user has already set a chat display name in the original tab, the full-page Chat view can reuse it for that new tab session; otherwise it prompts for a name as usual.",
-        "No sensitive credentials (PIN) are placed into the URL/query string as part of enabling the new-tab flow."
+        "A new deployment is triggered using the current repository state.",
+        "Deployment finishes successfully (no deployment failure).",
+        "If deployment fails again, provide the full deployment error output/logs so the failure can be diagnosed in a follow-up change request."
       ]
     }
   ],
   "constraints": [
-    "Frontend immutable paths must not be edited: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui.",
-    "Use English for any user-facing text.",
-    "Do not add WebSockets or real-time tech; chat remains polling-based via React Query.",
-    "Do not add any third-party authentication beyond Internet Identity (existing)."
+    "Do not change application behavior, UI, or backend logic as part of this redeploy request."
   ],
   "nonGoals": [
-    "Do not change or redesign the backend chat APIs/state for this request.",
-    "Do not remove the existing floating chat widget UI or its delete/multi-select features.",
-    "Do not add any new external API integrations."
+    "Implementing new features or fixes.",
+    "Refactoring frontend/backend code.",
+    "Changing canister state, schemas, or performing migrations."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
   }
 }

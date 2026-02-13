@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 43,
-  "summary": "Add enhancements to the post-unlock chat experience: keep the floating chat widget (with fixed-height scrollable list + warm scrollbar and per-user message deletion), and also add a full chat UI that opens in a new browser tab from the widget, existing alongside the in-page floating chat.",
+  "projectStateVersion": 47,
+  "summary": "Add enhancements to the post-unlock chat experience: keep the floating chat widget (with fixed-height scrollable list + warm scrollbar and per-user message deletion), and also add a full chat UI that opens in a new browser tab from the widget, existing alongside the in-page floating chat. Additionally, chat messages should auto-delete after 48 hours for all users.",
   "architectural_notes": [
     "Password protection requested is front-end only (not secure access control); it hides content in the UI until the correct 4-digit code is entered.",
     "Image selection should use standard browser file picker (<input type=\"file\">); browsers do not support deeper device-level storage permissions.",
@@ -563,6 +563,22 @@
         "REQ-80"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-add-a-right-side-vertical-slider-control-to-the-chat-ui-that-scrolls-through-the-chat-messages-by-controlling-the-message-list-scroll-position",
+      "title": "Add a right-side vertical slider control to the chat UI that scrolls through the chat messages by controlling the message list scroll position.",
+      "reqIds": [
+        "REQ-82"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-redeploy-the-application-using-the-current-codebase-no-feature-changes-and-ensure-the-deployment-completes-successfully",
+      "title": "Redeploy the application using the current codebase (no feature changes), and ensure the deployment completes successfully.",
+      "reqIds": [
+        "REQ-83"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -776,6 +792,26 @@
       "id": "AR-53",
       "summary": "Make the floating chat widget act as a launcher that opens a full chat UI in a new browser tab, while keeping the existing in-page floating chat UI available alongside it.",
       "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-54",
+      "summary": "Auto-delete all chat messages 48 hours after creation (permanently deleted in backend) and apply consistently to both the floating chat widget and the full-page chat view.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-55",
+      "summary": "Add a right-side slider control on the floating chat widget that scrolls through the chat messages (controls message list scroll position).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-56",
+      "summary": "Implement automatic, permanent deletion of chat messages 48 hours after their creation in the Motoko backend so expired messages are removed from storage for everyone and never returned by the chat APIs.",
+      "reqIds": [
+        "REQ-81"
+      ],
       "status": "pending"
     }
   ],
