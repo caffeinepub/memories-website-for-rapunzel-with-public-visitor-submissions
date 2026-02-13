@@ -4,13 +4,15 @@ import { PasswordGate } from './components/PasswordGate';
 import { WelcomePage } from './components/WelcomePage';
 import { MusicBoxWidget } from './components/MusicBoxWidget';
 import { YouTubeLinksDialog } from './components/YouTubeLinksDialog';
+import { ChatWidget } from './components/ChatWidget';
+import { ChatFullPage } from './components/ChatFullPage';
 import { useMemories } from './hooks/useMemories';
 import { usePasswordGate } from './hooks/usePasswordGate';
 import { useWelcomeGate } from './hooks/useWelcomeGate';
 import { useInternetIdentity } from './hooks/useInternetIdentity';
 import { Sparkles, Lock, Link as LinkIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 
 function App() {
   const { memories, isLoading, error } = useMemories();
@@ -18,6 +20,14 @@ function App() {
   const { isDismissed, isInitializing: isWelcomeInitializing, dismiss, reset } = useWelcomeGate();
   const { identity } = useInternetIdentity();
   const [isYouTubeLinksOpen, setIsYouTubeLinksOpen] = useState(false);
+
+  // Check if we're in chat view mode
+  const [isChatView, setIsChatView] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setIsChatView(params.get('view') === 'chat');
+  }, []);
 
   // Filter memories based on unlocked username
   const filteredMemories = useMemo(() => {
@@ -54,6 +64,11 @@ function App() {
   // Show password gate if locked
   if (!isUnlocked) {
     return <PasswordGate onUnlock={unlock} />;
+  }
+
+  // If in chat view mode, show full-page chat (skip welcome gate)
+  if (isChatView) {
+    return <ChatFullPage />;
   }
 
   // Show welcome page if unlocked but not yet dismissed
@@ -195,6 +210,9 @@ function App() {
 
       {/* Music Box Widget - Only visible when unlocked and welcome dismissed */}
       <MusicBoxWidget />
+
+      {/* Chat Widget - Only visible when unlocked and welcome dismissed */}
+      <ChatWidget />
 
       {/* YouTube Links Floating Button - Only visible when unlocked and welcome dismissed */}
       <button

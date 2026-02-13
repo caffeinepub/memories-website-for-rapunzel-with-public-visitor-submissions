@@ -94,7 +94,7 @@ export function useEditMemory() {
       return response.ok;
     },
     onSuccess: () => {
-      // Invalidate and refetch memories
+      // Invalidate all memory-related queries to refresh both list and viewer
       queryClient.invalidateQueries({ queryKey: ['memories'] });
     },
   });

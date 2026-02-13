@@ -72,3 +72,28 @@
         font-family: 'Georgia', 'Times New Roman', serif;
     }
 }
+
+/* Custom scrollbar styling for chat messages - warm theme */
+.chat-messages-scroll [data-radix-scroll-area-viewport] {
+    scrollbar-width: thin;
+    scrollbar-color: oklch(var(--primary) / 0.4) oklch(var(--muted) / 0.3);
+}
+
+.chat-messages-scroll [data-radix-scroll-area-viewport]::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chat-messages-scroll [data-radix-scroll-area-viewport]::-webkit-scrollbar-track {
+    background: oklch(var(--muted) / 0.3);
+    border-radius: 4px;
+}
+
+.chat-messages-scroll [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb {
+    background: oklch(var(--primary) / 0.4);
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.chat-messages-scroll [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb:hover {
+    background: oklch(var(--primary) / 0.6);
+}

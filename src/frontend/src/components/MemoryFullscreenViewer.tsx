@@ -38,9 +38,16 @@ export function MemoryFullscreenViewer({
     ? memory.submitter.toString() === identity.getPrincipal().toString()
     : false;
 
+  const handleOpenChange = (open: boolean) => {
+    // Only call onClose when the dialog is being closed (open === false)
+    if (!open) {
+      onClose();
+    }
+  };
+
   return (
     <>
-      <Dialog open={isOpen} onOpenChange={onClose}>
+      <Dialog open={isOpen} onOpenChange={handleOpenChange}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           {!canView ? (
             <div className="py-12 text-center">

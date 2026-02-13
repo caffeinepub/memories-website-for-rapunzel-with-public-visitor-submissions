@@ -10,6 +10,13 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export interface ChatMessage {
+  'id' : bigint,
+  'created' : bigint,
+  'displayName' : string,
+  'text' : string,
+  'sender' : Principal,
+}
 export interface Memory {
   'id' : bigint,
   'created' : bigint,
@@ -30,21 +37,44 @@ export interface Song {
 }
 export type SubmitMemoryResponse = { 'ok' : Memory } |
   { 'err' : { 'message' : string } };
+export type SubmitMessageResponse = { 'ok' : ChatMessage } |
+  { 'err' : { 'message' : string } };
+export interface UserProfile { 'displayName' : string, 'name' : string }
+export type UserRole = { 'admin' : null } |
+  { 'user' : null } |
+  { 'guest' : null };
 export interface YouTubeLink { 'url' : string, 'timestamp' : bigint }
 export interface _SERVICE {
+  '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
+  'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
+  'deleteChatMessages' : ActorMethod<[BigUint64Array], undefined>,
   'editMemory' : ActorMethod<
     [bigint, string, string, [] | [string], [] | [string]],
     SubmitMemoryResponse
   >,
   'getAllMemories' : ActorMethod<[], Array<Memory>>,
   'getAllSongs' : ActorMethod<[], Array<[bigint, Song]>>,
+  'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
+  'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getMemory' : ActorMethod<[bigint], [] | [Memory]>,
+  'getMessages' : ActorMethod<[], Array<ChatMessage>>,
+  'getMessagesByPrincipal' : ActorMethod<[Principal], Array<ChatMessage>>,
+  'getMessagesBySender' : ActorMethod<[Principal], Array<ChatMessage>>,
+  'getMessagesFromTo' : ActorMethod<
+    [Principal, bigint, bigint],
+    Array<ChatMessage>
+  >,
   'getSong' : ActorMethod<[bigint], [] | [Song]>,
+  'getUniqueSenders' : ActorMethod<[], Array<Principal>>,
+  'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'getYouTubeLinks' : ActorMethod<[], Array<YouTubeLink>>,
+  'isCallerAdmin' : ActorMethod<[], boolean>,
+  'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'submitMemory' : ActorMethod<
     [string, string, [] | [string], [] | [string]],
     SubmitMemoryResponse
   >,
+  'submitMessage' : ActorMethod<[string, string], SubmitMessageResponse>,
   'submitYouTubeLink' : ActorMethod<[string], boolean>,
   'uploadSong' : ActorMethod<
     [

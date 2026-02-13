@@ -1,32 +1,42 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-13T14:33:38.358Z",
-  "summary": "Implemented sessionStorage persistence of unlocked username and applied username-based filtering for memories in the main App, with role context passed into MemoryList and MemoryFullscreenViewer. Memory editing remains gated by submitter principal checks and the edit dialog enforces the passed canEdit flag. Some additional, non-requested enhancements appear to have been added to the memory edit dialog (file upload/validation UX).",
-  "missing_requirements": [],
-  "hallucinated_features": [
+  "generatedAt": "2026-02-13T22:45:33.500Z",
+  "summary": "Diff adds a new full-page chat route via `?view=chat`, reuses a shared `ChatView` component for both full-page and widget UI, updates the floating chat launcher to open the full-page chat in a new tab, and adds localStorage fallback for unlock state and chat display name to work across tabs. One acceptance criterion (timestamp placement under message text) is not verifiable from the truncated `ChatView` diff.",
+  "missing_requirements": [
     {
-      "description": "Enhanced MemoryEditDialog to support image/video file selection, previews, and additional validations (size/type checks, mutual exclusivity checks) beyond the username-based access restriction requirements.",
-      "reason": "BuildRequest only asked for username-based restrictions for memory viewing/editing; it did not request expanding the edit UI to include file upload handling/preview and new validation rules.",
+      "id": "REQ-78",
+      "requirement": "The full-page Chat UI shows message timestamps as time-only and places the timestamp under the message text (consistent with the existing widget behavior).",
+      "reason": "`ChatView` imports `formatTimeOnly`, but the truncated diff does not include the message render JSX, so placement of the timestamp (under the message text) cannot be confirmed from the provided evidence.",
       "evidence": [
-        "frontend/src/components/MemoryEditDialog.tsx"
-      ]
-    },
-    {
-      "description": "Added an explicit “Access Restricted” UI state inside the full-screen memory viewer (lock icon + message) when a memory is not viewable for the active username.",
-      "reason": "REQ-63 specifies filtering visibility for the list and full-screen viewer, but does not explicitly request a new restricted-access screen/message (filtering could have prevented navigation instead).",
-      "evidence": [
-        "frontend/src/components/MemoryFullscreenViewer.tsx"
+        "frontend/src/components/ChatView.tsx (truncated)"
       ]
     }
   ],
-  "confidence": 0.72,
+  "hallucinated_features": [
+    {
+      "description": "Added a full-page Chat footer containing a promotional external link to caffeine.ai (with UTM parameters) and a heart glyph in the UI.",
+      "reason": "BuildRequest does not request adding promotional/footer content or external referral links as part of the full-page chat view.",
+      "evidence": [
+        "frontend/src/components/ChatFullPage.tsx"
+      ]
+    },
+    {
+      "description": "Added a secondary/hidden floating button to open the in-page chat panel (separate from the main chat launcher).",
+      "reason": "REQ-79 asks to keep the existing in-page floating chat UI available, but does not request adding a new hidden/alternate launcher button.",
+      "evidence": [
+        "frontend/src/components/ChatWidget.tsx"
+      ]
+    }
+  ],
+  "confidence": 0.68,
   "changed_files": [
     "frontend-file-summaries.txt",
     "frontend/src/App.tsx",
-    "frontend/src/components/MemoryEditDialog.tsx",
-    "frontend/src/components/MemoryFullscreenViewer.tsx",
-    "frontend/src/components/MemoryList.tsx",
+    "frontend/src/components/ChatFullPage.tsx",
+    "frontend/src/components/ChatView.tsx",
+    "frontend/src/components/ChatWidget.tsx",
+    "frontend/src/hooks/useChatDisplayName.ts",
     "frontend/src/hooks/usePasswordGate.ts",
     "project_state.json"
   ]

@@ -1,93 +1,92 @@
 {
   "kind": "build_request",
-  "title": "Restrict memory visibility and editing by unlock username (tingi99 vs meow99)",
+  "title": "Add full-page Chat view that opens in a new browser tab from the floating Chat widget",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-62",
-      "text": "Persist the successfully-unlocked username (\"tingi99\" or \"meow99\") in sessionStorage and expose it via the existing password-gate state so the rest of the UI can determine which unlock role is active; ensure the stored username is cleared when the visitor uses the existing Lock action.",
+      "id": "REQ-78",
+      "text": "Add a new full-page Chat view that can be opened in a separate browser tab and shows the same shared chat timeline (read messages, send message, delete own message(s), multi-select delete) using the existing backend + React Query chat hooks.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-6",
-          "msg-8"
+          "msg-1",
+          "msg-2",
+          "msg-3",
+          "msg-4",
+          "msg-5"
         ],
         "quotes": [
-          "Create a system in which only the visitor who enters tingi99 I able to see all the memories and those who enters meow99 can only see and edit their own response",
-          "Persist the unlocked state for the current browser session only when BOTH username + code are valid, and ensure the existing \"Lock\" action fully re-locks the site so the username+code screen is shown again."
+          "Made the chat system open in new tab",
+          "exist alongside",
+          "Build it"
         ]
       },
       "acceptanceCriteria": [
-        "After a successful unlock, refreshing the page during the same browser session keeps the user unlocked AND retains which username was used to unlock.",
-        "Clicking the existing \"Lock\" action re-locks the site and removes the stored unlocked flag and the stored unlocked username from sessionStorage.",
-        "No new UI is added for configuring roles; the role is derived only from the username entered on the existing PasswordGate screen."
+        "A dedicated full-page Chat UI exists (not a floating panel) and is reachable via a URL mode/parameter (e.g., a query param like view=chat or equivalent).",
+        "The full-page Chat UI supports: display-name requirement, viewing messages, sending messages, per-message delete for own messages, and multi-select delete for own messages, using the same shared timeline as the floating widget.",
+        "The full-page Chat UI shows message timestamps as time-only and places the timestamp under the message text (consistent with the existing widget behavior).",
+        "The full-page Chat UI uses the existing warm Tailwind/shadcn theme and remains readable on mobile and desktop."
       ]
     },
     {
-      "id": "REQ-63",
-      "text": "Apply username-based memory visibility rules only to the Memories list and the Memory full-screen viewer: when unlocked as \"tingi99\", show all memories; when unlocked as \"meow99\", show only memories submitted by the current visitor (i.e., memories whose submitter Principal matches the currently active Internet Identity Principal used by the frontend actor/identity).",
+      "id": "REQ-79",
+      "text": "Update the existing bottom-right floating Chat launcher behavior so it opens the full-page Chat view in a new browser tab, while keeping the existing in-page floating chat UI available alongside it.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-6",
-          "msg-10"
+          "msg-1",
+          "msg-2",
+          "msg-3",
+          "msg-4",
+          "msg-5"
         ],
         "quotes": [
-          "Create a system in which only the visitor who enters tingi99 I able to see all the memories and those who enters meow99 can only see and edit their own response",
-          "Only on memory and memory editing"
+          "The floating chat widget should stay, clicking it should open the full chat UI in a new tab, and the in-page floating version should continue to exist alongside the new-tab version."
         ]
       },
       "acceptanceCriteria": [
-        "When unlocked as \"tingi99\", the Memories count and list include all stored memories returned by the backend.",
-        "When unlocked as \"meow99\", the Memories list renders only memories whose `memory.submitter` matches the current `identity.getPrincipal()` value.",
-        "When unlocked as \"meow99\" and the visitor has no matching memories, show the existing empty-state layout but with user-facing text in English explaining that only their own memories are visible under meow99.",
-        "The YouTube links feature and Music Box feature remain unchanged and still show shared lists as they do now (no username-based filtering is applied there)."
+        "Clicking the floating Chat launcher opens a new browser tab to the app’s full-page Chat view.",
+        "The in-page floating chat UI still exists and can still be opened/used in the original tab (it is not removed or replaced).",
+        "The new-tab Chat entry point does not overlap or interfere with the existing bottom-right Music Box launcher button or the YouTube Links floating button in the original tab."
       ]
     },
     {
-      "id": "REQ-64",
-      "text": "Enforce username-based memory editing rules only within the memory editing experience: when unlocked as \"tingi99\", keep the existing rule that only the original submitter can edit; when unlocked as \"meow99\", allow editing only for memories that are both (a) visible under the meow99 filter and (b) authored by the current Internet Identity Principal (do not allow editing any other memory).",
+      "id": "REQ-80",
+      "text": "Ensure the new-tab full-page Chat view can access the current session’s unlocked state and (if present) chat display name without requiring the user to re-enter the username/PIN solely due to opening a new tab.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-6",
-          "msg-10"
+          "msg-1",
+          "msg-2",
+          "msg-3",
+          "msg-4",
+          "msg-5"
         ],
         "quotes": [
-          "Create a system in which only the visitor who enters tingi99 I able to see all the memories and those who enters meow99 can only see and edit their own response",
-          "Only on memory and memory editing"
+          "open in new tab",
+          "exist alongside"
         ]
       },
       "acceptanceCriteria": [
-        "When unlocked as \"tingi99\", the current edit enable/disable behavior remains unchanged: edit is enabled only when `memory.submitter` matches the current Internet Identity principal.",
-        "When unlocked as \"meow99\", edit controls are only available for memories that pass the meow99 visibility filter and match the current Internet Identity principal (no UI path allows editing any other memory).",
-        "No changes are made to backend edit authorization logic; backend still rejects edits when the caller is not the original submitter."
+        "If the user is already unlocked in the original tab, opening the full-page Chat in a new tab results in the chat being usable without forcing a redundant unlock step that occurs only because it is a new tab.",
+        "If the user has already set a chat display name in the original tab, the full-page Chat view can reuse it for that new tab session; otherwise it prompts for a name as usual.",
+        "No sensitive credentials (PIN) are placed into the URL/query string as part of enabling the new-tab flow."
       ]
     }
   ],
   "constraints": [
-    "Apply the new username-based restriction ONLY to memory viewing (list + full-screen viewer) and memory editing, not to any other sections/features.",
-    "Do not modify any files under frontend/src/components/ui or any other frontend immutable paths listed in SYSTEM_CONTEXT.",
-    "Keep all user-facing text in English."
+    "Frontend immutable paths must not be edited: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui.",
+    "Use English for any user-facing text.",
+    "Do not add WebSockets or real-time tech; chat remains polling-based via React Query.",
+    "Do not add any third-party authentication beyond Internet Identity (existing)."
   ],
   "nonGoals": [
-    "Do not add new authentication methods beyond the existing PasswordGate + Internet Identity integration already present in the project.",
-    "Do not change how songs (Music Box) are listed/visible; they remain shared among visitors.",
-    "Do not change how YouTube links are listed/visible; they remain shared among visitors.",
-    "Do not add any admin UI or role management UI beyond typing the username on the lock screen."
+    "Do not change or redesign the backend chat APIs/state for this request.",
+    "Do not remove the existing floating chat widget UI or its delete/multi-select features.",
+    "Do not add any new external API integrations."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
-  },
-  "userProfileUpdate": {
-    "goalsToAdd": [],
-    "goalsToRemove": [],
-    "preferencesToAdd": [],
-    "preferencesToRemove": [],
-    "miscToAdd": [],
-    "miscToRemove": [],
-    "fieldsToSet": {},
-    "fieldsToDelete": []
   }
 }

@@ -1,7 +1,7 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-13T14:33:38.363Z",
+  "generatedAt": "2026-02-13T22:45:33.505Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
@@ -11,52 +11,46 @@
     "implemented": 3,
     "items": [
       {
-        "id": "REQ-62",
-        "summary": "Persist the successfully-unlocked username (\"tingi99\" or \"meow99\") in sessionStorage and expose it via the existing password-gate state so the rest of the UI can determine which unlock role is active; ensure the stored username is cleared when the visitor uses the existing Lock action.",
+        "id": "REQ-78",
+        "summary": "Add a new full-page Chat view that can be opened in a separate browser tab and shows the same shared chat timeline (read messages, send message, delete own message(s), multi-select delete) using the existing backend + React Query chat hooks.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/ChatView.tsx",
+          "frontend/src/components/ChatFullPage.tsx",
+          "frontend/src/App.tsx",
+          "frontend/src/components/ChatWidget.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/ChatView.tsx",
+          "frontend/src/components/ChatFullPage.tsx",
+          "frontend/src/App.tsx",
+          "frontend/src/components/ChatWidget.tsx"
+        ]
+      },
+      {
+        "id": "REQ-79",
+        "summary": "Update the existing bottom-right floating Chat launcher behavior so it opens the full-page Chat view in a new browser tab, while keeping the existing in-page floating chat UI available alongside it.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/ChatWidget.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/ChatWidget.tsx"
+        ]
+      },
+      {
+        "id": "REQ-80",
+        "summary": "Ensure the new-tab full-page Chat view can access the current session’s unlocked state and (if present) chat display name without requiring the user to re-enter the username/PIN solely due to opening a new tab.",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/hooks/usePasswordGate.ts",
+          "frontend/src/hooks/useChatDisplayName.ts",
           "frontend/src/App.tsx"
         ],
         "matchedFiles": [
           "frontend/src/hooks/usePasswordGate.ts",
+          "frontend/src/hooks/useChatDisplayName.ts",
           "frontend/src/App.tsx"
-        ]
-      },
-      {
-        "id": "REQ-63",
-        "summary": "Apply username-based memory visibility rules only to the Memories list and the Memory full-screen viewer: when unlocked as \"tingi99\", show all memories; when unlocked as \"meow99\", show only memories submitted by the current visitor (i.e., memories whose submitter Principal matches the currently active Internet Identity Principal used by the frontend actor/identity).",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/App.tsx",
-          "frontend/src/components/MemoryList.tsx",
-          "frontend/src/components/MemoryFullscreenViewer.tsx",
-          "frontend/src/components/MemoryList.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/App.tsx",
-          "frontend/src/components/MemoryList.tsx",
-          "frontend/src/components/MemoryFullscreenViewer.tsx",
-          "frontend/src/components/MemoryList.tsx"
-        ]
-      },
-      {
-        "id": "REQ-64",
-        "summary": "Enforce username-based memory editing rules only within the memory editing experience: when unlocked as \"tingi99\", keep the existing rule that only the original submitter can edit; when unlocked as \"meow99\", allow editing only for memories that are both (a) visible under the meow99 filter and (b) authored by the current Internet Identity Principal (do not allow editing any other memory).",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/MemoryList.tsx",
-          "frontend/src/components/MemoryFullscreenViewer.tsx",
-          "frontend/src/components/MemoryEditDialog.tsx",
-          "frontend/src/components/MemoryList.tsx",
-          "frontend/src/components/MemoryFullscreenViewer.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/MemoryList.tsx",
-          "frontend/src/components/MemoryFullscreenViewer.tsx",
-          "frontend/src/components/MemoryEditDialog.tsx",
-          "frontend/src/components/MemoryList.tsx",
-          "frontend/src/components/MemoryFullscreenViewer.tsx"
         ]
       }
     ]
@@ -67,9 +61,10 @@
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
     "frontend/src/App.tsx",
-    "frontend/src/components/MemoryEditDialog.tsx",
-    "frontend/src/components/MemoryFullscreenViewer.tsx",
-    "frontend/src/components/MemoryList.tsx",
+    "frontend/src/components/ChatFullPage.tsx",
+    "frontend/src/components/ChatView.tsx",
+    "frontend/src/components/ChatWidget.tsx",
+    "frontend/src/hooks/useChatDisplayName.ts",
     "frontend/src/hooks/usePasswordGate.ts",
     "project_state.json",
     "scratch/component-selection.json",

@@ -7,7 +7,7 @@ import { Label } from './ui/label';
 import { Alert, AlertDescription } from './ui/alert';
 import { useState, useEffect } from 'react';
 import { useEditMemory } from '../hooks/useMemories';
-import { Loader2, Upload, X, AlertCircle, Lock } from 'lucide-react';
+import { Loader2, X, Lock } from 'lucide-react';
 
 interface MemoryEditDialogProps {
   memory: Memory;
@@ -170,8 +170,15 @@ export function MemoryEditDialog({ memory, isOpen, onClose, canEdit }: MemoryEdi
     }
   };
 
+  const handleOpenChange = (open: boolean) => {
+    // Only call onClose when the dialog is being closed (open === false)
+    if (!open) {
+      onClose();
+    }
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-serif">Edit Memory</DialogTitle>
@@ -339,35 +346,18 @@ export function MemoryEditDialog({ memory, isOpen, onClose, canEdit }: MemoryEdi
                     Max 50MB. Supported formats: MP4, WebM, OGG
                   </p>
                 </div>
-
-                {videoFile && (
-                  <Alert>
-                    <Upload className="w-4 h-4" />
-                    <AlertDescription>
-                      Video file selected: {videoFile.name} ({(videoFile.size / 1024 / 1024).toFixed(2)} MB)
-                    </AlertDescription>
-                  </Alert>
-                )}
               </div>
             </div>
 
-            {/* Error Message */}
+            {/* Error Display */}
             {error && (
               <Alert variant="destructive">
-                <AlertCircle className="w-4 h-4" />
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
 
-            {/* Success Message */}
-            {editMemory.isSuccess && (
-              <Alert className="bg-green-50 text-green-900 border-green-200">
-                <AlertDescription>Memory updated successfully!</AlertDescription>
-              </Alert>
-            )}
-
-            {/* Actions */}
-            <div className="flex justify-end gap-3">
+            {/* Action Buttons */}
+            <div className="flex justify-end gap-3 pt-4">
               <Button
                 type="button"
                 variant="outline"
@@ -378,7 +368,7 @@ export function MemoryEditDialog({ memory, isOpen, onClose, canEdit }: MemoryEdi
               </Button>
               <Button
                 type="submit"
-                disabled={editMemory.isPending || text.trim().length === 0}
+                disabled={editMemory.isPending || !canEdit}
               >
                 {editMemory.isPending ? (
                   <>

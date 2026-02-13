@@ -1,94 +1,79 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Username-based session unlock role for memory visibility and editing (tingi99 vs meow99)",
+  "title": "Full-page Chat view with new-tab launch from floating widget",
   "requirements": [
     {
-      "id": "REQ-62",
-      "summary": "Persist unlocked username in sessionStorage and expose it via password-gate state; clear on Lock.",
+      "id": "REQ-78",
+      "summary": "Create a dedicated full-page Chat view reachable via a URL parameter that shares the same chat timeline and features as the existing floating Chat widget.",
       "acceptanceCriteria": [
-        "After a successful unlock, refreshing the page during the same browser session keeps the user unlocked AND retains which username was used to unlock.",
-        "Clicking the existing \"Lock\" action re-locks the site and removes the stored unlocked flag and the stored unlocked username from sessionStorage.",
-        "No new UI is added for configuring roles; the role is derived only from the username entered on the existing PasswordGate screen."
+        "A dedicated full-page Chat UI exists (not a floating panel) and is reachable via a URL mode/parameter (e.g., a query param like view=chat or equivalent).",
+        "The full-page Chat UI supports: display-name requirement, viewing messages, sending messages, per-message delete for own messages, and multi-select delete for own messages, using the same shared timeline as the floating widget.",
+        "The full-page Chat UI shows message timestamps as time-only and places the timestamp under the message text (consistent with the existing widget behavior).",
+        "The full-page Chat UI uses the existing warm Tailwind/shadcn theme and remains readable on mobile and desktop."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ChatView.tsx",
+          "operation": "create",
+          "description": "Create a reusable ChatView component that encapsulates the shared chat timeline UI (read messages, send message, delete own message, multi-select delete, display-name prompt) using existing React Query hooks from frontend/src/hooks/useChat.ts and display-name persistence from frontend/src/hooks/useChatDisplayName.ts. Use shadcn-ui components (e.g., Card, ScrollArea, Input, Button, Alert, AlertDialog) to match the current warm theme; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/ChatFullPage.tsx",
+          "operation": "create",
+          "description": "Create a full-page Chat container that renders the shared ChatView in a dedicated, responsive full-height layout (mobile + desktop). Include minimal page chrome (e.g., header/title + back/close control that removes the URL mode) without adding new routes beyond the required URL parameter mode. Use shadcn-ui components to keep styling consistent; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire the new full-page Chat view into the app via a URL parameter mode (e.g., view=chat). When the parameter is present, render ChatFullPage instead of the main memory-book interface, while keeping the existing unlock and welcome gating behavior consistent with the rest of the app. Ensure timestamps are rendered time-only via frontend/src/lib/format.ts formatTimeOnly and placed under message text (delegated to ChatView)."
+        },
+        {
+          "path": "frontend/src/components/ChatWidget.tsx",
+          "operation": "modify",
+          "description": "Refactor the floating widget to reuse the shared ChatView for the in-page panel to guarantee feature parity (timeline, sending, per-message delete, multi-select delete, and display-name prompt) between floating and full-page modes. Use shadcn-ui components as currently used in the widget; verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-79",
+      "summary": "Change the floating Chat launcher click behavior to open the full-page Chat view in a new tab without removing the existing floating chat UI.",
+      "acceptanceCriteria": [
+        "Clicking the floating Chat launcher opens a new browser tab to the app’s full-page Chat view.",
+        "The in-page floating chat UI still exists and can still be opened/used in the original tab (it is not removed or replaced).",
+        "The new-tab Chat entry point does not overlap or interfere with the existing bottom-right Music Box launcher button or the YouTube Links floating button in the original tab."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ChatWidget.tsx",
+          "operation": "modify",
+          "description": "Update the bottom-right Chat launcher button handler to open a new browser tab pointing to the app URL with the Chat URL mode/parameter (e.g., view=chat). Keep the floating panel available alongside the new-tab flow (e.g., still allow opening/using the in-page panel in the original tab). Ensure the launcher remains positioned above the Music Box launcher (current bottom-right layout) and does not introduce new overlapping floating controls. Verify shadcn-ui component usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-80",
+      "summary": "Persist unlocked state and chat display name in a way that can be reused in a newly opened tab without putting sensitive credentials in the URL.",
+      "acceptanceCriteria": [
+        "If the user is already unlocked in the original tab, opening the full-page Chat in a new tab results in the chat being usable without forcing a redundant unlock step that occurs only because it is a new tab.",
+        "If the user has already set a chat display name in the original tab, the full-page Chat view can reuse it for that new tab session; otherwise it prompts for a name as usual.",
+        "No sensitive credentials (PIN) are placed into the URL/query string as part of enabling the new-tab flow."
       ],
       "file_operations": [
         {
           "path": "frontend/src/hooks/usePasswordGate.ts",
           "operation": "modify",
-          "description": "Extend the password-gate hook to persist the successfully-unlocked username (\"tingi99\" or \"meow99\") in sessionStorage alongside the existing unlocked flag; on initialization restore both values and treat the session as locked unless both are present/valid; on lock() clear both keys and reset in-memory state."
+          "description": "Adjust unlock persistence so the unlocked flag + unlocked username can be read by a newly opened tab (e.g., read from localStorage as a fallback to sessionStorage, and write to both on unlock; clear both on lock). Do not store the PIN/password, and do not introduce any URL-based credential passing."
+        },
+        {
+          "path": "frontend/src/hooks/useChatDisplayName.ts",
+          "operation": "modify",
+          "description": "Adjust chat display name persistence so it can be reused across tabs (e.g., read from localStorage as a fallback to sessionStorage, and write to both when set; clear both when cleared). Keep validation behavior consistent and do not place any sensitive values into the URL."
         },
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Consume the extended password-gate state (including unlocked username) so the rest of the UI can branch on the active unlock role; ensure the existing Lock action continues to fully re-lock (including clearing stored unlocked username) while preserving existing welcome-gate behavior."
-        }
-      ]
-    },
-    {
-      "id": "REQ-63",
-      "summary": "Filter memories by unlock username for the Memories list and full-screen viewer only (tingi99: all, meow99: own Principal).",
-      "acceptanceCriteria": [
-        "When unlocked as \"tingi99\", the Memories count and list include all stored memories returned by the backend.",
-        "When unlocked as \"meow99\", the Memories list renders only memories whose `memory.submitter` matches the current `identity.getPrincipal()` value.",
-        "When unlocked as \"meow99\" and the visitor has no matching memories, show the existing empty-state layout but with user-facing text in English explaining that only their own memories are visible under meow99.",
-        "The YouTube links feature and Music Box feature remain unchanged and still show shared lists as they do now (no username-based filtering is applied there)."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Apply username-based filtering to the memories array used for the Memories count and MemoryList rendering: if unlocked as \"tingi99\" show all, if \"meow99\" filter to memories whose submitter matches the current Internet Identity principal from useInternetIdentity; keep MusicBoxWidget and YouTubeLinksDialog logic unchanged."
-        },
-        {
-          "path": "frontend/src/components/MemoryList.tsx",
-          "operation": "modify",
-          "description": "Add an optional prop to customize the empty-state message (while keeping the existing empty-state layout) so App can supply an English explanation when unlocked as \"meow99\" and no matching memories are visible."
-        },
-        {
-          "path": "frontend/src/components/MemoryFullscreenViewer.tsx",
-          "operation": "modify",
-          "description": "Accept the active unlock username and current principal (as strings) and enforce viewer visibility rules defensively: when unlocked as \"meow99\" and the memory submitter does not match the current principal, show a simple English access-restricted message within the viewer rather than rendering the memory content."
-        },
-        {
-          "path": "frontend/src/components/MemoryList.tsx",
-          "operation": "modify",
-          "description": "Wire the role/principal props through from each memory card into MemoryFullscreenViewer so the full-screen viewer can apply the same meow99 visibility restriction."
-        }
-      ]
-    },
-    {
-      "id": "REQ-64",
-      "summary": "Enforce username-based editing UI rules within the memory editing experience (no backend changes).",
-      "acceptanceCriteria": [
-        "When unlocked as \"tingi99\", the current edit enable/disable behavior remains unchanged: edit is enabled only when `memory.submitter` matches the current Internet Identity principal.",
-        "When unlocked as \"meow99\", edit controls are only available for memories that pass the meow99 visibility filter and match the current Internet Identity principal (no UI path allows editing any other memory).",
-        "No changes are made to backend edit authorization logic; backend still rejects edits when the caller is not the original submitter."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/MemoryList.tsx",
-          "operation": "modify",
-          "description": "Update edit-control gating to incorporate the active unlock username and current principal: for \"tingi99\" preserve the existing submitter==principal rule; for \"meow99\" ensure edit is only possible when submitter==principal (and therefore also visible under the meow99 filter). Also pass role/principal into MemoryEditDialog wiring."
-        },
-        {
-          "path": "frontend/src/components/MemoryFullscreenViewer.tsx",
-          "operation": "modify",
-          "description": "Update the viewer edit icon enable/disable logic to incorporate the active unlock username and current principal: keep the existing submitter==principal rule for \"tingi99\" and restrict \"meow99\" to only submitter==principal; ensure edit cannot be initiated from the viewer when the memory is not allowed under the current role."
-        },
-        {
-          "path": "frontend/src/components/MemoryEditDialog.tsx",
-          "operation": "modify",
-          "description": "Add a defensive canEdit/role-aware guard prop so that if the dialog is ever opened without permission, it shows an English message and disables saving; keep all mutation behavior unchanged so the backend continues to enforce submitter-only edits."
-        },
-        {
-          "path": "frontend/src/components/MemoryList.tsx",
-          "operation": "modify",
-          "description": "Wire the new MemoryEditDialog guard prop from the memory card edit button flow so the dialog behavior aligns with the role-based editing rules."
-        },
-        {
-          "path": "frontend/src/components/MemoryFullscreenViewer.tsx",
-          "operation": "modify",
-          "description": "Wire the new MemoryEditDialog guard prop from the full-screen viewer edit button flow so the dialog behavior aligns with the role-based editing rules."
+          "description": "Ensure the full-page Chat URL mode follows the same gate logic as the rest of the app, and that the new cross-tab persistence changes allow a new tab to recognize an already-unlocked session and an existing chat display name without re-prompting solely due to opening a new tab."
         }
       ]
     }

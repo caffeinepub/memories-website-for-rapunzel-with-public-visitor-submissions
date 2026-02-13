@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 33,
-  "summary": "Website for collecting and displaying written memories of a friend named Rapunzel, with public visitor submissions (including optional image/video uploads), protected by a simple front-end username + 4-digit password gate (allowed usernames: tingi99 or meow99; code: 5699) and a welcome page after unlocking; welcome page includes a “Made for Tingi” subheading. Main experience includes a bottom-right floating “music box” widget where visitors can upload music files stored in the backend and played from a shared list; additionally includes a new post-unlock YouTube links page (opened via a floating button) where visitors can submit and view YouTube video/Short links with upload timestamps, and memories can be opened in a separate full-screen view with visible timestamps in the list. Memory access rules: users who unlock with username tingi99 can view all memories; users who unlock with username meow99 can only view and edit memories they themselves submitted (restriction applies only to memories list/full-screen memory view and memory editing). Add memory editing: only the original submitter can edit, with Edit actions available on both the memory card and the full-screen view, and edits record an edited timestamp.",
+  "projectStateVersion": 43,
+  "summary": "Add enhancements to the post-unlock chat experience: keep the floating chat widget (with fixed-height scrollable list + warm scrollbar and per-user message deletion), and also add a full chat UI that opens in a new browser tab from the widget, existing alongside the in-page floating chat.",
   "architectural_notes": [
     "Password protection requested is front-end only (not secure access control); it hides content in the UI until the correct 4-digit code is entered.",
     "Image selection should use standard browser file picker (<input type=\"file\">); browsers do not support deeper device-level storage permissions.",
@@ -14,7 +14,10 @@
     "Support an edited timestamp on memories (e.g., editedAt) and display it in the UI when present.",
     "Add memory access control rules driven by the entered username (front-end only): tingi99 shows all memories; meow99 filters to only memories whose submitter identifier matches the current browser and only allows editing those."
   ],
-  "known_issues": [],
+  "known_issues": [
+    "Memory editing UI is visible but the edit/save flow is not working; needs a fix so memory text can be added/removed and saved successfully.",
+    "Chat widget per-message delete icon is missing in the current build; needs to be added (and visible in both single-delete and multi-select modes)."
+  ],
   "isFixRequest": false,
   "existing_features": [
     {
@@ -456,6 +459,110 @@
         "REQ-64"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-create-a-new-react-query-data-layer-for-chat-that-can-a-fetch-the-shared-chat-message-list-from-the-backend-with-periodic-polling-no-websockets-and-b-submit-new-chat-messages-with-cache-invalidation-refetch-after-successful-submission",
+      "title": "Create a new React Query data layer for chat that can (a) fetch the shared chat message list from the backend with periodic polling (no WebSockets) and (b) submit new chat messages, with cache invalidation/refetch after successful submission.",
+      "reqIds": [
+        "REQ-66"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-new-floating-chat-widget-ui-that-is-visible-only-in-the-main-post-unlock-experience-i-e-after-the-visitor-unlocks-with-username-pin-and-dismisses-the-welcome-page-the-widget-must-allow-composing-a-message-submitting-it-and-reading-the-shared-message-list-the-widget-must-match-the-existing-warm-tailwind-shadcn-visual-theme-and-must-not-overlap-interfere-with-the-existing-bottom-right-music-box-launcher-button",
+      "title": "Add a new floating chat widget UI that is visible only in the main post-unlock experience (i.e., after the visitor unlocks with username + PIN and dismisses the Welcome page). The widget must allow composing a message, submitting it, and reading the shared message list. The widget must match the existing warm Tailwind + shadcn visual theme and must not overlap/interfere with the existing bottom-right Music Box launcher button.",
+      "reqIds": [
+        "REQ-67"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-chat-access-is-available-to-both-allowed-unlock-usernames-tingi99-and-meow99-and-does-not-apply-the-existing-memory-visibility-editing-restrictions-to-chat-messages",
+      "title": "Ensure chat access is available to both allowed unlock usernames (\"tingi99\" and \"meow99\") and does not apply the existing memory visibility/editing restrictions to chat messages.",
+      "reqIds": [
+        "REQ-68"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-shared-chat-system-so-a-visitor-must-enter-a-display-name-before-sending-chat-messages-store-the-display-name-in-browser-session-storage-for-the-current-session-and-display-that-name-publicly-alongside-each-chat-message-for-all-visitors",
+      "title": "Update the shared chat system so a visitor must enter a display name before sending chat messages; store the display name in browser session storage for the current session; and display that name publicly alongside each chat message for all visitors.",
+      "reqIds": [
+        "REQ-69"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-change-chat-message-timestamp-rendering-so-each-chat-message-shows-only-the-time-english-formatting-and-the-timestamp-appears-under-the-message-text-not-next-to-the-sender",
+      "title": "Change chat message timestamp rendering so each chat message shows only the time (English formatting) and the timestamp appears under the message text (not next to the sender).",
+      "reqIds": [
+        "REQ-70"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-existing-memories-edit-flow-so-editing-actually-works-opening-the-edit-dialog-must-remain-open-allow-adding-removing-words-in-the-memory-text-and-successfully-save-changes-to-the-backend-so-updates-appear-in-the-memories-list-and-the-full-screen-memory-viewer",
+      "title": "Fix the existing Memories edit flow so editing actually works: opening the edit dialog must remain open, allow adding/removing words in the memory text, and successfully save changes to the backend so updates appear in the memories list and the full-screen memory viewer.",
+      "reqIds": [
+        "REQ-71"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-fixed-height-internally-scrollable-chat-message-list-inside-the-floating-chat-widget-and-apply-a-custom-warm-themed-scrollbar-style-not-default-browser-scrollbar-styling",
+      "title": "Add a fixed-height, internally scrollable chat message list inside the floating Chat widget, and apply a custom warm-themed scrollbar style (not default browser scrollbar styling).",
+      "reqIds": [
+        "REQ-72"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-floating-chat-widget-ui-to-support-deleting-only-the-current-visitor-s-own-messages-including-a-a-small-per-message-delete-icon-for-single-deletion-and-b-an-optional-multi-select-mode-to-delete-multiple-selected-own-messages-at-once-deleted-messages-must-disappear-entirely",
+      "title": "Update the floating Chat widget UI to support deleting only the current visitor’s own messages, including (a) a small per-message delete icon for single deletion and (b) an optional multi-select mode to delete multiple selected own messages at once; deleted messages must disappear entirely.",
+      "reqIds": [
+        "REQ-75"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-extend-the-frontend-chat-data-layer-react-query-to-call-the-new-backend-delete-apis-for-single-and-bulk-deletion-and-ensure-appropriate-cache-invalidation-refetch-so-the-chat-message-list-updates-after-deletions",
+      "title": "Extend the frontend chat data layer (React Query) to call the new backend delete APIs for single and bulk deletion, and ensure appropriate cache invalidation/refetch so the chat message list updates after deletions.",
+      "reqIds": [
+        "REQ-76"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-floating-chat-widget-ui-so-a-small-per-message-delete-icon-is-visible-for-the-current-visitor-s-own-messages-in-both-a-normal-single-message-mode-and-b-multi-select-mode-and-clicking-the-icon-deletes-that-specific-message-with-the-existing-confirmation-dialog-without-interfering-with-multi-select-selection-toggling",
+      "title": "Update the floating Chat widget UI so a small per-message delete icon is visible for the current visitor’s own messages in BOTH (a) normal single-message mode and (b) multi-select mode, and clicking the icon deletes that specific message (with the existing confirmation dialog) without interfering with multi-select selection toggling.",
+      "reqIds": [
+        "REQ-77"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-new-full-page-chat-view-that-can-be-opened-in-a-separate-browser-tab-and-shows-the-same-shared-chat-timeline-read-messages-send-message-delete-own-message-s-multi-select-delete-using-the-existing-backend-react-query-chat-hooks",
+      "title": "Add a new full-page Chat view that can be opened in a separate browser tab and shows the same shared chat timeline (read messages, send message, delete own message(s), multi-select delete) using the existing backend + React Query chat hooks.",
+      "reqIds": [
+        "REQ-78"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-existing-bottom-right-floating-chat-launcher-behavior-so-it-opens-the-full-page-chat-view-in-a-new-browser-tab-while-keeping-the-existing-in-page-floating-chat-ui-available-alongside-it",
+      "title": "Update the existing bottom-right floating Chat launcher behavior so it opens the full-page Chat view in a new browser tab, while keeping the existing in-page floating chat UI available alongside it.",
+      "reqIds": [
+        "REQ-79"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-the-new-tab-full-page-chat-view-can-access-the-current-session-s-unlocked-state-and-if-present-chat-display-name-without-requiring-the-user-to-re-enter-the-username-pin-solely-due-to-opening-a-new-tab",
+      "title": "Ensure the new-tab full-page Chat view can access the current session’s unlocked state and (if present) chat display name without requiring the user to re-enter the username/PIN solely due to opening a new tab.",
+      "reqIds": [
+        "REQ-80"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -602,6 +709,72 @@
     {
       "id": "AR-42",
       "summary": "Restrict memory visibility/editing based on unlock username: tingi99 can view all memories; meow99 can only view and edit memories they submitted (apply only to memory viewing + memory editing).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-43",
+      "summary": "Add a post-unlock floating chat widget (visible to both usernames) that allows two different users to talk via a simple message-board style chat with periodic fetching (no real-time).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-44",
+      "summary": "Add backend storage and APIs for a shared chat timeline that allows multiple visitors (two different users) to post messages and read messages later (message-board style; no real-time). Each chat message must include: a unique id, message text, created timestamp, and the sender Principal (derived from the authenticated caller).",
+      "reqIds": [
+        "REQ-65"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-45",
+      "summary": "Require entering a display name in the floating chat widget before sending messages; remember the name for the session and display it publicly alongside chat messages.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-46",
+      "summary": "Display a timestamp on each chat message showing only the time (English formatting), positioned under the message.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-47",
+      "summary": "Add a fixed-height scrollable chat message list inside the floating chat widget with a custom warm-themed scrollbar (Tailwind styling).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-48",
+      "summary": "Allow users to delete only their own chat messages from the floating chat widget via a per-message delete icon; deleted messages disappear entirely.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-49",
+      "summary": "Support multi-select deletion of a user's own chat messages in the floating chat widget (bulk delete), with deleted messages disappearing entirely.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-51",
+      "summary": "Implement backend APIs to delete chat messages such that a caller can delete only chat messages they originally sent; deleted messages must disappear entirely from the shared timeline for all visitors.",
+      "reqIds": [
+        "REQ-73"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-52",
+      "summary": "Implement backend support for bulk deletion of chat messages (multi-select) so a caller can delete multiple messages in one action, but only for messages they originally sent; deleted messages must disappear entirely.",
+      "reqIds": [
+        "REQ-74"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-53",
+      "summary": "Make the floating chat widget act as a launcher that opens a full chat UI in a new browser tab, while keeping the existing in-page floating chat UI available alongside it.",
       "reqIds": [],
       "status": "pending"
     }

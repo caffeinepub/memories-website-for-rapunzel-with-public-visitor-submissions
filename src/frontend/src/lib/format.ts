@@ -16,3 +16,19 @@ export function formatTimestamp(timestamp: bigint): string {
     hour12: true,
   }).format(date);
 }
+
+/**
+ * Format a bigint timestamp (nanoseconds) to time-only string for chat messages
+ */
+export function formatTimeOnly(timestamp: bigint): string {
+  // Convert nanoseconds to milliseconds
+  const milliseconds = Number(timestamp) / 1000000;
+  const date = new Date(milliseconds);
+
+  // Format as "3:45 PM"
+  return new Intl.DateTimeFormat('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  }).format(date);
+}

@@ -8,6 +8,11 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
+export const UserRole = IDL.Variant({
+  'admin' : IDL.Null,
+  'user' : IDL.Null,
+  'guest' : IDL.Null,
+});
 export const Memory = IDL.Record({
   'id' : IDL.Nat64,
   'created' : IDL.Int,
@@ -30,12 +35,30 @@ export const Song = IDL.Record({
   'artist' : IDL.Opt(IDL.Text),
   'bytes' : IDL.Vec(IDL.Nat8),
 });
+export const UserProfile = IDL.Record({
+  'displayName' : IDL.Text,
+  'name' : IDL.Text,
+});
+export const ChatMessage = IDL.Record({
+  'id' : IDL.Nat64,
+  'created' : IDL.Int,
+  'displayName' : IDL.Text,
+  'text' : IDL.Text,
+  'sender' : IDL.Principal,
+});
 export const YouTubeLink = IDL.Record({
   'url' : IDL.Text,
   'timestamp' : IDL.Int,
 });
+export const SubmitMessageResponse = IDL.Variant({
+  'ok' : ChatMessage,
+  'err' : IDL.Record({ 'message' : IDL.Text }),
+});
 
 export const idlService = IDL.Service({
+  '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+  'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+  'deleteChatMessages' : IDL.Func([IDL.Vec(IDL.Nat64)], [], []),
   'editMemory' : IDL.Func(
       [IDL.Nat64, IDL.Text, IDL.Text, IDL.Opt(IDL.Text), IDL.Opt(IDL.Text)],
       [SubmitMemoryResponse],
@@ -47,14 +70,41 @@ export const idlService = IDL.Service({
       [IDL.Vec(IDL.Tuple(IDL.Nat64, Song))],
       ['query'],
     ),
+  'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
+  'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getMemory' : IDL.Func([IDL.Nat64], [IDL.Opt(Memory)], ['query']),
+  'getMessages' : IDL.Func([], [IDL.Vec(ChatMessage)], ['query']),
+  'getMessagesByPrincipal' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Vec(ChatMessage)],
+      ['query'],
+    ),
+  'getMessagesBySender' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Vec(ChatMessage)],
+      ['query'],
+    ),
+  'getMessagesFromTo' : IDL.Func(
+      [IDL.Principal, IDL.Int, IDL.Int],
+      [IDL.Vec(ChatMessage)],
+      ['query'],
+    ),
   'getSong' : IDL.Func([IDL.Nat64], [IDL.Opt(Song)], ['query']),
+  'getUniqueSenders' : IDL.Func([], [IDL.Vec(IDL.Principal)], ['query']),
+  'getUserProfile' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Opt(UserProfile)],
+      ['query'],
+    ),
   'getYouTubeLinks' : IDL.Func([], [IDL.Vec(YouTubeLink)], ['query']),
+  'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+  'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
   'submitMemory' : IDL.Func(
       [IDL.Text, IDL.Text, IDL.Opt(IDL.Text), IDL.Opt(IDL.Text)],
       [SubmitMemoryResponse],
       [],
     ),
+  'submitMessage' : IDL.Func([IDL.Text, IDL.Text], [SubmitMessageResponse], []),
   'submitYouTubeLink' : IDL.Func([IDL.Text], [IDL.Bool], []),
   'uploadSong' : IDL.Func(
       [
@@ -73,6 +123,11 @@ export const idlService = IDL.Service({
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
+  const UserRole = IDL.Variant({
+    'admin' : IDL.Null,
+    'user' : IDL.Null,
+    'guest' : IDL.Null,
+  });
   const Memory = IDL.Record({
     'id' : IDL.Nat64,
     'created' : IDL.Int,
@@ -95,9 +150,27 @@ export const idlFactory = ({ IDL }) => {
     'artist' : IDL.Opt(IDL.Text),
     'bytes' : IDL.Vec(IDL.Nat8),
   });
+  const UserProfile = IDL.Record({
+    'displayName' : IDL.Text,
+    'name' : IDL.Text,
+  });
+  const ChatMessage = IDL.Record({
+    'id' : IDL.Nat64,
+    'created' : IDL.Int,
+    'displayName' : IDL.Text,
+    'text' : IDL.Text,
+    'sender' : IDL.Principal,
+  });
   const YouTubeLink = IDL.Record({ 'url' : IDL.Text, 'timestamp' : IDL.Int });
+  const SubmitMessageResponse = IDL.Variant({
+    'ok' : ChatMessage,
+    'err' : IDL.Record({ 'message' : IDL.Text }),
+  });
   
   return IDL.Service({
+    '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+    'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+    'deleteChatMessages' : IDL.Func([IDL.Vec(IDL.Nat64)], [], []),
     'editMemory' : IDL.Func(
         [IDL.Nat64, IDL.Text, IDL.Text, IDL.Opt(IDL.Text), IDL.Opt(IDL.Text)],
         [SubmitMemoryResponse],
@@ -109,12 +182,43 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(IDL.Tuple(IDL.Nat64, Song))],
         ['query'],
       ),
+    'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
+    'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getMemory' : IDL.Func([IDL.Nat64], [IDL.Opt(Memory)], ['query']),
+    'getMessages' : IDL.Func([], [IDL.Vec(ChatMessage)], ['query']),
+    'getMessagesByPrincipal' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Vec(ChatMessage)],
+        ['query'],
+      ),
+    'getMessagesBySender' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Vec(ChatMessage)],
+        ['query'],
+      ),
+    'getMessagesFromTo' : IDL.Func(
+        [IDL.Principal, IDL.Int, IDL.Int],
+        [IDL.Vec(ChatMessage)],
+        ['query'],
+      ),
     'getSong' : IDL.Func([IDL.Nat64], [IDL.Opt(Song)], ['query']),
+    'getUniqueSenders' : IDL.Func([], [IDL.Vec(IDL.Principal)], ['query']),
+    'getUserProfile' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Opt(UserProfile)],
+        ['query'],
+      ),
     'getYouTubeLinks' : IDL.Func([], [IDL.Vec(YouTubeLink)], ['query']),
+    'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+    'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
     'submitMemory' : IDL.Func(
         [IDL.Text, IDL.Text, IDL.Opt(IDL.Text), IDL.Opt(IDL.Text)],
         [SubmitMemoryResponse],
+        [],
+      ),
+    'submitMessage' : IDL.Func(
+        [IDL.Text, IDL.Text],
+        [SubmitMessageResponse],
         [],
       ),
     'submitYouTubeLink' : IDL.Func([IDL.Text], [IDL.Bool], []),
