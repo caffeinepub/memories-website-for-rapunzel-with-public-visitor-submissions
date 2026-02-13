@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 29,
-  "summary": "Website for collecting and displaying written memories of a friend named Rapunzel, with public visitor submissions (including optional image/video uploads), protected by a simple front-end username + 4-digit password gate (allowed usernames: tingi99 or meow99; code: 5699) and a welcome page after unlocking; welcome page includes a “Made for Tingi” subheading. Main experience includes a bottom-right floating “music box” widget where visitors can upload music files stored in the backend and played from a shared list; additionally includes a new post-unlock YouTube links page (opened via a floating button) where visitors can submit and view YouTube video/Short links with upload timestamps, and memories can be opened in a separate full-screen view with visible timestamps in the list.",
+  "projectStateVersion": 33,
+  "summary": "Website for collecting and displaying written memories of a friend named Rapunzel, with public visitor submissions (including optional image/video uploads), protected by a simple front-end username + 4-digit password gate (allowed usernames: tingi99 or meow99; code: 5699) and a welcome page after unlocking; welcome page includes a “Made for Tingi” subheading. Main experience includes a bottom-right floating “music box” widget where visitors can upload music files stored in the backend and played from a shared list; additionally includes a new post-unlock YouTube links page (opened via a floating button) where visitors can submit and view YouTube video/Short links with upload timestamps, and memories can be opened in a separate full-screen view with visible timestamps in the list. Memory access rules: users who unlock with username tingi99 can view all memories; users who unlock with username meow99 can only view and edit memories they themselves submitted (restriction applies only to memories list/full-screen memory view and memory editing). Add memory editing: only the original submitter can edit, with Edit actions available on both the memory card and the full-screen view, and edits record an edited timestamp.",
   "architectural_notes": [
     "Password protection requested is front-end only (not secure access control); it hides content in the UI until the correct 4-digit code is entered.",
     "Image selection should use standard browser file picker (<input type=\"file\">); browsers do not support deeper device-level storage permissions.",
@@ -9,7 +9,10 @@
     "Piddu bot replaces Tingi: bottom-right widget with a new UI look; simulated/deterministic responses only (no real LLM integration) and no Google Custom Search / no backend search or summarizing.",
     "Piddu/chat UI is removed and replaced by a bottom-right floating music-box widget that supports visitor music uploads.",
     "Visitor-uploaded music should be persisted in the backend (shared across visitors) and rendered in the widget as a simple list with play/pause controls.",
-    "Password gate now requires a username + 4-digit code; username validation is front-end only and accepts either \"tingi99\" or \"meow99\" (username input displayed above the PIN input)."
+    "Password gate now requires a username + 4-digit code; username validation is front-end only and accepts either \"tingi99\" or \"meow99\" (username input displayed above the PIN input).",
+    "Memory editing requires tracking/identifying the original submitter (no real auth); implement a submitter identifier and enforce edit permission so only the original submitter can edit.",
+    "Support an edited timestamp on memories (e.g., editedAt) and display it in the UI when present.",
+    "Add memory access control rules driven by the entered username (front-end only): tingi99 shows all memories; meow99 filters to only memories whose submitter identifier matches the current browser and only allows editing those."
   ],
   "known_issues": [],
   "isFixRequest": false,
@@ -397,6 +400,62 @@
         "REQ-56"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-persist-a-per-browser-submitter-credential-on-the-frontend-and-include-it-when-submitting-new-memories-so-the-same-browser-can-later-prove-it-is-the-original-submitter-for-edit-permission-checks",
+      "title": "Persist a per-browser submitter credential on the frontend and include it when submitting new memories so the same browser can later prove it is the original submitter for edit permission checks.",
+      "reqIds": [
+        "REQ-58"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-edit-flow-in-the-ui-that-is-available-on-both-the-memory-card-and-the-full-screen-memory-view-and-only-shows-enables-editing-when-the-current-browser-is-allowed-to-edit-that-specific-memory",
+      "title": "Add an edit flow in the UI that is available on both the memory card and the full-screen memory view, and only shows/enables editing when the current browser is allowed to edit that specific memory.",
+      "reqIds": [
+        "REQ-59"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-an-edited-timestamp-for-edited-memories-in-both-the-memory-card-and-the-full-screen-memory-view-in-english-formatting-while-keeping-the-original-created-timestamp-visible",
+      "title": "Display an edited timestamp for edited memories in both the memory card and the full-screen memory view, in English formatting, while keeping the original created timestamp visible.",
+      "reqIds": [
+        "REQ-60"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-extend-the-react-query-memories-data-layer-to-support-editing-memories-via-the-new-backend-api-and-invalidate-refetch-cached-memories-after-a-successful-edit",
+      "title": "Extend the React Query memories data layer to support editing memories via the new backend API and invalidate/refetch cached memories after a successful edit.",
+      "reqIds": [
+        "REQ-61"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-persist-the-successfully-unlocked-username-tingi99-or-meow99-in-sessionstorage-and-expose-it-via-the-existing-password-gate-state-so-the-rest-of-the-ui-can-determine-which-unlock-role-is-active-ensure-the-stored-username-is-cleared-when-the-visitor-uses-the-existing-lock-action",
+      "title": "Persist the successfully-unlocked username (\"tingi99\" or \"meow99\") in sessionStorage and expose it via the existing password-gate state so the rest of the UI can determine which unlock role is active; ensure the stored username is cleared when the visitor uses the existing Lock action.",
+      "reqIds": [
+        "REQ-62"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-username-based-memory-visibility-rules-only-to-the-memories-list-and-the-memory-full-screen-viewer-when-unlocked-as-tingi99-show-all-memories-when-unlocked-as-meow99-show-only-memories-submitted-by-the-current-visitor-i-e-memories-whose-submitter-principal-matches-the-currently-active-internet-identity-principal-used-by-the-frontend-actor-identity",
+      "title": "Apply username-based memory visibility rules only to the Memories list and the Memory full-screen viewer: when unlocked as \"tingi99\", show all memories; when unlocked as \"meow99\", show only memories submitted by the current visitor (i.e., memories whose submitter Principal matches the currently active Internet Identity Principal used by the frontend actor/identity).",
+      "reqIds": [
+        "REQ-63"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-enforce-username-based-memory-editing-rules-only-within-the-memory-editing-experience-when-unlocked-as-tingi99-keep-the-existing-rule-that-only-the-original-submitter-can-edit-when-unlocked-as-meow99-allow-editing-only-for-memories-that-are-both-a-visible-under-the-meow99-filter-and-b-authored-by-the-current-internet-identity-principal-do-not-allow-editing-any-other-memory",
+      "title": "Enforce username-based memory editing rules only within the memory editing experience: when unlocked as \"tingi99\", keep the existing rule that only the original submitter can edit; when unlocked as \"meow99\", allow editing only for memories that are both (a) visible under the meow99 filter and (b) authored by the current Internet Identity Principal (do not allow editing any other memory).",
+      "reqIds": [
+        "REQ-64"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -523,6 +582,26 @@
     {
       "id": "AR-39",
       "summary": "Update the front-end lock screen to require entering an allowed username (tingi99 or meow99) plus the existing 4-digit code (5699), with the username input placed above the PIN input.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-40",
+      "summary": "Allow the original submitter of a memory to edit it later, with Edit actions on both the memory card and the full-screen memory view, and record/display an edited timestamp.",
+      "reqIds": [],
+      "status": "in_progress"
+    },
+    {
+      "id": "AR-41",
+      "summary": "Update the Motoko Memory data model and APIs to support editing a memory only by the original submitter, including recording an edited timestamp.",
+      "reqIds": [
+        "REQ-57"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-42",
+      "summary": "Restrict memory visibility/editing based on unlock username: tingi99 can view all memories; meow99 can only view and edit memories they submitted (apply only to memory viewing + memory editing).",
       "reqIds": [],
       "status": "pending"
     }

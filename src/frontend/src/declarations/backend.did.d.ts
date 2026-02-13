@@ -13,8 +13,10 @@ import type { Principal } from '@icp-sdk/core/principal';
 export interface Memory {
   'id' : bigint,
   'created' : bigint,
+  'submitter' : [] | [Principal],
+  'edited' : [] | [bigint],
   'text' : string,
-  'author' : [] | [string],
+  'author' : string,
   'imageUrl' : [] | [string],
   'videoUrl' : [] | [string],
 }
@@ -30,13 +32,17 @@ export type SubmitMemoryResponse = { 'ok' : Memory } |
   { 'err' : { 'message' : string } };
 export interface YouTubeLink { 'url' : string, 'timestamp' : bigint }
 export interface _SERVICE {
+  'editMemory' : ActorMethod<
+    [bigint, string, string, [] | [string], [] | [string]],
+    SubmitMemoryResponse
+  >,
   'getAllMemories' : ActorMethod<[], Array<Memory>>,
   'getAllSongs' : ActorMethod<[], Array<[bigint, Song]>>,
   'getMemory' : ActorMethod<[bigint], [] | [Memory]>,
   'getSong' : ActorMethod<[bigint], [] | [Song]>,
   'getYouTubeLinks' : ActorMethod<[], Array<YouTubeLink>>,
   'submitMemory' : ActorMethod<
-    [string, [] | [string], [] | [string], [] | [string]],
+    [string, string, [] | [string], [] | [string]],
     SubmitMemoryResponse
   >,
   'submitYouTubeLink' : ActorMethod<[string], boolean>,

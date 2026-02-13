@@ -2,29 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-lock-screen-passwordgate-ui-to-include-a-username-input-section-positioned-above-the-existing-4-digit-pin-input-and-use-clear-english-labels-and-helper-text",
-      "featureTitle": "Update the lock screen (PasswordGate) UI to include a username input section positioned above the existing 4-digit PIN input, and use clear English labels and helper text.",
+      "featureId": "feature-persist-the-successfully-unlocked-username-tingi99-or-meow99-in-sessionstorage-and-expose-it-via-the-existing-password-gate-state-so-the-rest-of-the-ui-can-determine-which-unlock-role-is-active-ensure-the-stored-username-is-cleared-when-the-visitor-uses-the-existing-lock-action",
+      "featureTitle": "Persist the successfully-unlocked username (\"tingi99\" or \"meow99\") in sessionStorage and expose it via the existing password-gate state so the rest of the UI can determine which unlock role is active; ensure the stored username is cleared when the visitor uses the existing Lock action.",
       "files": [
-        "frontend/src/components/PasswordGate.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "http-outcalls@3.0.0"
-      ],
-      "testIds": [
-        "REQ-54"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-change-the-lock-unlock-validation-so-the-site-unlocks-only-when-the-visitor-enters-an-allowed-username-exactly-tingi99-or-meow99-and-the-existing-4-digit-code-exactly-5699",
-      "featureTitle": "Change the lock/unlock validation so the site unlocks only when the visitor enters an allowed username (exactly \"tingi99\" or \"meow99\") AND the existing 4-digit code (exactly \"5699\").",
-      "files": [
-        "frontend/src/components/PasswordGate.tsx",
+        "frontend/src/App.tsx",
         "frontend/src/hooks/usePasswordGate.ts"
       ],
       "components": [
@@ -36,15 +17,17 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-55"
+        "REQ-62"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-persist-the-unlocked-state-for-the-current-browser-session-only-when-both-username-code-are-valid-and-ensure-the-existing-lock-action-fully-re-locks-the-site-so-the-username-code-screen-is-shown-again",
-      "featureTitle": "Persist the unlocked state for the current browser session only when BOTH username + code are valid, and ensure the existing \"Lock\" action fully re-locks the site so the username+code screen is shown again.",
+      "featureId": "feature-apply-username-based-memory-visibility-rules-only-to-the-memories-list-and-the-memory-full-screen-viewer-when-unlocked-as-tingi99-show-all-memories-when-unlocked-as-meow99-show-only-memories-submitted-by-the-current-visitor-i-e-memories-whose-submitter-principal-matches-the-currently-active-internet-identity-principal-used-by-the-frontend-actor-identity",
+      "featureTitle": "Apply username-based memory visibility rules only to the Memories list and the Memory full-screen viewer: when unlocked as \"tingi99\", show all memories; when unlocked as \"meow99\", show only memories submitted by the current visitor (i.e., memories whose submitter Principal matches the currently active Internet Identity Principal used by the frontend actor/identity).",
       "files": [
-        "frontend/src/hooks/usePasswordGate.ts"
+        "frontend/src/App.tsx",
+        "frontend/src/components/MemoryFullscreenViewer.tsx",
+        "frontend/src/components/MemoryList.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -55,7 +38,28 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-56"
+        "REQ-63"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-enforce-username-based-memory-editing-rules-only-within-the-memory-editing-experience-when-unlocked-as-tingi99-keep-the-existing-rule-that-only-the-original-submitter-can-edit-when-unlocked-as-meow99-allow-editing-only-for-memories-that-are-both-a-visible-under-the-meow99-filter-and-b-authored-by-the-current-internet-identity-principal-do-not-allow-editing-any-other-memory",
+      "featureTitle": "Enforce username-based memory editing rules only within the memory editing experience: when unlocked as \"tingi99\", keep the existing rule that only the original submitter can edit; when unlocked as \"meow99\", allow editing only for memories that are both (a) visible under the meow99 filter and (b) authored by the current Internet Identity Principal (do not allow editing any other memory).",
+      "files": [
+        "frontend/src/components/MemoryEditDialog.tsx",
+        "frontend/src/components/MemoryFullscreenViewer.tsx",
+        "frontend/src/components/MemoryList.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-64"
       ],
       "confidence": "high"
     }

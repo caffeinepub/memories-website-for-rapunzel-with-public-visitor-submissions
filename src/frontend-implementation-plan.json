@@ -1,70 +1,94 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Username + 4-digit code lock screen gate (tingi99/meow99 + 5699)",
+  "title": "Username-based session unlock role for memory visibility and editing (tingi99 vs meow99)",
   "requirements": [
     {
-      "id": "REQ-54",
-      "summary": "Add a username input above the existing 4-digit access code input on the PasswordGate with clear English labels and helper text.",
+      "id": "REQ-62",
+      "summary": "Persist unlocked username in sessionStorage and expose it via password-gate state; clear on Lock.",
       "acceptanceCriteria": [
-        "The lock screen displays a new \"Username\" input field above the existing \"Access Code\" (PIN) field.",
-        "All user-facing text in the lock screen remains in English and matches the site’s warm visual theme (Tailwind + shadcn).",
-        "The username field accepts free-typed text (not numeric-only), while the access code field remains numeric-only and limited to 4 digits."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/PasswordGate.tsx",
-          "operation": "modify",
-          "description": "Update the PasswordGate UI to include a new text-based \"Username\" field positioned above the existing numeric-only 4-digit \"Access Code\" field, with English helper text. Use shadcn-ui building blocks already in use (Card, Input, Label, Button, Alert) to preserve the warm Tailwind + shadcn look and feel. Verify the component's usage instructions before implementing."
-        }
-      ]
-    },
-    {
-      "id": "REQ-55",
-      "summary": "Require exact allowed username (tingi99 or meow99) AND exact 4-digit code (5699) to unlock; show clear English error messaging without revealing additional secrets.",
-      "acceptanceCriteria": [
-        "Entering username \"tingi99\" with access code \"5699\" unlocks the site.",
-        "Entering username \"meow99\" with access code \"5699\" unlocks the site.",
-        "Any other username value does not unlock the site, even if the code is correct.",
-        "Any incorrect code does not unlock the site, even if the username is one of the allowed values.",
-        "Error messaging is shown in English and clearly distinguishes invalid credentials (e.g., \"Incorrect username or code. Please try again.\") without revealing any new secrets beyond the allowed usernames already specified by the user."
+        "After a successful unlock, refreshing the page during the same browser session keeps the user unlocked AND retains which username was used to unlock.",
+        "Clicking the existing \"Lock\" action re-locks the site and removes the stored unlocked flag and the stored unlocked username from sessionStorage.",
+        "No new UI is added for configuring roles; the role is derived only from the username entered on the existing PasswordGate screen."
       ],
       "file_operations": [
         {
           "path": "frontend/src/hooks/usePasswordGate.ts",
           "operation": "modify",
-          "description": "Update the password gate unlock logic to validate BOTH fields: username must be exactly one of the two allowed values (\"tingi99\" or \"meow99\") and code must be exactly \"5699\". Adjust the unlock function signature to accept username+code together while keeping the mechanism fully frontend/session-based."
-        },
-        {
-          "path": "frontend/src/components/PasswordGate.tsx",
-          "operation": "modify",
-          "description": "Update form submission to call the new unlock API with both username and access code, and display a single English error message for invalid credentials (e.g., \"Incorrect username or code. Please try again.\") without adding any UI to configure usernames/codes. Keep inputs constrained: username free-typed text; code numeric-only limited to 4 digits. Use existing shadcn-ui Alert for errors. Verify the component's usage instructions before implementing."
+          "description": "Extend the password-gate hook to persist the successfully-unlocked username (\"tingi99\" or \"meow99\") in sessionStorage alongside the existing unlocked flag; on initialization restore both values and treat the session as locked unless both are present/valid; on lock() clear both keys and reset in-memory state."
         },
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Wire the updated PasswordGate unlock callback signature from usePasswordGate into the PasswordGate component so the app unlock flow still works with the new username+code validation."
+          "description": "Consume the extended password-gate state (including unlocked username) so the rest of the UI can branch on the active unlock role; ensure the existing Lock action continues to fully re-lock (including clearing stored unlocked username) while preserving existing welcome-gate behavior."
         }
       ]
     },
     {
-      "id": "REQ-56",
-      "summary": "Persist unlocked state for the browser session only after successful username+code validation, and ensure the existing Lock action fully re-locks and shows the gate again.",
+      "id": "REQ-63",
+      "summary": "Filter memories by unlock username for the Memories list and full-screen viewer only (tingi99: all, meow99: own Principal).",
       "acceptanceCriteria": [
-        "After a successful unlock with a valid username + \"5699\", refreshing the page during the same browser session does not re-prompt for credentials (same behavior as before, now gated by both fields).",
-        "Clicking the existing \"Lock\" button returns the visitor to the username+code gate and clears the session’s unlocked state so a refresh shows the gate again.",
-        "No backend changes are required for this persistence behavior (session-only browser storage remains the mechanism)."
+        "When unlocked as \"tingi99\", the Memories count and list include all stored memories returned by the backend.",
+        "When unlocked as \"meow99\", the Memories list renders only memories whose `memory.submitter` matches the current `identity.getPrincipal()` value.",
+        "When unlocked as \"meow99\" and the visitor has no matching memories, show the existing empty-state layout but with user-facing text in English explaining that only their own memories are visible under meow99.",
+        "The YouTube links feature and Music Box feature remain unchanged and still show shared lists as they do now (no username-based filtering is applied there)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/usePasswordGate.ts",
-          "operation": "modify",
-          "description": "Ensure sessionStorage unlocked persistence is written only after BOTH username and code are validated successfully, and that the existing lock() implementation fully clears the session flag so refresh re-prompts."
-        },
-        {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Confirm the existing \"Lock\" actions continue to call the password-gate lock() function so the app returns to the username+code gate immediately and remains locked across refresh within the same session."
+          "description": "Apply username-based filtering to the memories array used for the Memories count and MemoryList rendering: if unlocked as \"tingi99\" show all, if \"meow99\" filter to memories whose submitter matches the current Internet Identity principal from useInternetIdentity; keep MusicBoxWidget and YouTubeLinksDialog logic unchanged."
+        },
+        {
+          "path": "frontend/src/components/MemoryList.tsx",
+          "operation": "modify",
+          "description": "Add an optional prop to customize the empty-state message (while keeping the existing empty-state layout) so App can supply an English explanation when unlocked as \"meow99\" and no matching memories are visible."
+        },
+        {
+          "path": "frontend/src/components/MemoryFullscreenViewer.tsx",
+          "operation": "modify",
+          "description": "Accept the active unlock username and current principal (as strings) and enforce viewer visibility rules defensively: when unlocked as \"meow99\" and the memory submitter does not match the current principal, show a simple English access-restricted message within the viewer rather than rendering the memory content."
+        },
+        {
+          "path": "frontend/src/components/MemoryList.tsx",
+          "operation": "modify",
+          "description": "Wire the role/principal props through from each memory card into MemoryFullscreenViewer so the full-screen viewer can apply the same meow99 visibility restriction."
+        }
+      ]
+    },
+    {
+      "id": "REQ-64",
+      "summary": "Enforce username-based editing UI rules within the memory editing experience (no backend changes).",
+      "acceptanceCriteria": [
+        "When unlocked as \"tingi99\", the current edit enable/disable behavior remains unchanged: edit is enabled only when `memory.submitter` matches the current Internet Identity principal.",
+        "When unlocked as \"meow99\", edit controls are only available for memories that pass the meow99 visibility filter and match the current Internet Identity principal (no UI path allows editing any other memory).",
+        "No changes are made to backend edit authorization logic; backend still rejects edits when the caller is not the original submitter."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/MemoryList.tsx",
+          "operation": "modify",
+          "description": "Update edit-control gating to incorporate the active unlock username and current principal: for \"tingi99\" preserve the existing submitter==principal rule; for \"meow99\" ensure edit is only possible when submitter==principal (and therefore also visible under the meow99 filter). Also pass role/principal into MemoryEditDialog wiring."
+        },
+        {
+          "path": "frontend/src/components/MemoryFullscreenViewer.tsx",
+          "operation": "modify",
+          "description": "Update the viewer edit icon enable/disable logic to incorporate the active unlock username and current principal: keep the existing submitter==principal rule for \"tingi99\" and restrict \"meow99\" to only submitter==principal; ensure edit cannot be initiated from the viewer when the memory is not allowed under the current role."
+        },
+        {
+          "path": "frontend/src/components/MemoryEditDialog.tsx",
+          "operation": "modify",
+          "description": "Add a defensive canEdit/role-aware guard prop so that if the dialog is ever opened without permission, it shows an English message and disables saving; keep all mutation behavior unchanged so the backend continues to enforce submitter-only edits."
+        },
+        {
+          "path": "frontend/src/components/MemoryList.tsx",
+          "operation": "modify",
+          "description": "Wire the new MemoryEditDialog guard prop from the memory card edit button flow so the dialog behavior aligns with the role-based editing rules."
+        },
+        {
+          "path": "frontend/src/components/MemoryFullscreenViewer.tsx",
+          "operation": "modify",
+          "description": "Wire the new MemoryEditDialog guard prop from the full-screen viewer edit button flow so the dialog behavior aligns with the role-based editing rules."
         }
       ]
     }

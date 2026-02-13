@@ -2,6 +2,7 @@ import List "mo:core/List";
 import Map "mo:core/Map";
 import Nat64 "mo:core/Nat64";
 import Order "mo:core/Order";
+import Principal "mo:core/Principal";
 import Time "mo:core/Time";
 
 
@@ -11,10 +12,12 @@ actor {
   type Memory = {
     id : Nat64;
     text : Text;
-    author : ?Text;
+    author : Text;
     created : Int;
     imageUrl : ?Text;
     videoUrl : ?Text;
+    submitter : ?Principal;
+    edited : ?Int;
   };
 
   module Memory {
@@ -34,7 +37,7 @@ actor {
   // Memories API
   public shared ({ caller }) func submitMemory(
     text : Text,
-    author : ?Text,
+    author : Text,
     imageUrl : ?Text,
     videoUrl : ?Text,
   ) : async SubmitMemoryResponse {
@@ -49,11 +52,43 @@ actor {
       created = Time.now();
       imageUrl;
       videoUrl;
+      submitter = ?caller;
+      edited = null;
     };
 
     memories.add(memory.id, memory);
     nextMemoryId += 1;
     #ok memory;
+  };
+
+  public shared ({ caller }) func editMemory(
+    id : Nat64,
+    newText : Text,
+    newAuthor : Text,
+    newImageUrl : ?Text,
+    newVideoUrl : ?Text,
+  ) : async SubmitMemoryResponse {
+    switch (memories.get(id)) {
+      case (null) {
+        #err { message = "Memory not found" };
+      };
+      case (?existingMemory) {
+        if (existingMemory.submitter != ?caller) {
+          return #err { message = "You are not the author of this memory" };
+        };
+
+        let updatedMemory : Memory = {
+          existingMemory with
+          text = newText;
+          author = newAuthor;
+          imageUrl = newImageUrl;
+          videoUrl = newVideoUrl;
+          edited = ?Time.now();
+        };
+        memories.add(id, updatedMemory);
+        #ok updatedMemory;
+      };
+    };
   };
 
   public query ({ caller }) func getMemory(id : Nat64) : async ?Memory {
@@ -119,18 +154,18 @@ actor {
     timestamp : Int;
   };
 
-  let youtubeLinks = List.empty<YouTubeLink>();
+  var youtubeLinks : [YouTubeLink] = [];
 
   public shared ({ caller }) func submitYouTubeLink(url : Text) : async Bool {
     let newLink : YouTubeLink = {
       url;
       timestamp = Time.now();
     };
-    youtubeLinks.add(newLink);
+    youtubeLinks := youtubeLinks.concat([newLink]);
     true;
   };
 
   public query ({ caller }) func getYouTubeLinks() : async [YouTubeLink] {
-    youtubeLinks.toArray();
+    youtubeLinks;
   };
 };

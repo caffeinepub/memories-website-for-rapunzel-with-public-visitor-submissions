@@ -1,14 +1,32 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-13T13:42:09.163Z",
-  "summary": "The diff implements the requested username + 4-digit code lock screen changes by updating PasswordGate UI to include a Username field above the Access Code field, enforcing numeric-only 4-digit entry for the code, adding English validation/error messaging, and updating the password-gate hook to validate only allowed usernames (tingi99/meow99) plus code 5699 with sessionStorage-based session-only persistence and a lock action that clears the session flag.",
+  "generatedAt": "2026-02-13T14:33:38.358Z",
+  "summary": "Implemented sessionStorage persistence of unlocked username and applied username-based filtering for memories in the main App, with role context passed into MemoryList and MemoryFullscreenViewer. Memory editing remains gated by submitter principal checks and the edit dialog enforces the passed canEdit flag. Some additional, non-requested enhancements appear to have been added to the memory edit dialog (file upload/validation UX).",
   "missing_requirements": [],
-  "hallucinated_features": [],
-  "confidence": 0.74,
+  "hallucinated_features": [
+    {
+      "description": "Enhanced MemoryEditDialog to support image/video file selection, previews, and additional validations (size/type checks, mutual exclusivity checks) beyond the username-based access restriction requirements.",
+      "reason": "BuildRequest only asked for username-based restrictions for memory viewing/editing; it did not request expanding the edit UI to include file upload handling/preview and new validation rules.",
+      "evidence": [
+        "frontend/src/components/MemoryEditDialog.tsx"
+      ]
+    },
+    {
+      "description": "Added an explicit “Access Restricted” UI state inside the full-screen memory viewer (lock icon + message) when a memory is not viewable for the active username.",
+      "reason": "REQ-63 specifies filtering visibility for the list and full-screen viewer, but does not explicitly request a new restricted-access screen/message (filtering could have prevented navigation instead).",
+      "evidence": [
+        "frontend/src/components/MemoryFullscreenViewer.tsx"
+      ]
+    }
+  ],
+  "confidence": 0.72,
   "changed_files": [
     "frontend-file-summaries.txt",
-    "frontend/src/components/PasswordGate.tsx",
+    "frontend/src/App.tsx",
+    "frontend/src/components/MemoryEditDialog.tsx",
+    "frontend/src/components/MemoryFullscreenViewer.tsx",
+    "frontend/src/components/MemoryList.tsx",
     "frontend/src/hooks/usePasswordGate.ts",
     "project_state.json"
   ]

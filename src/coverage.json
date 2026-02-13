@@ -1,7 +1,7 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-13T13:42:09.168Z",
+  "generatedAt": "2026-02-13T14:33:38.363Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
@@ -11,40 +11,52 @@
     "implemented": 3,
     "items": [
       {
-        "id": "REQ-54",
-        "summary": "Update the lock screen (PasswordGate) UI to include a username input section positioned above the existing 4-digit PIN input, and use clear English labels and helper text.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/PasswordGate.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/PasswordGate.tsx"
-        ]
-      },
-      {
-        "id": "REQ-55",
-        "summary": "Change the lock/unlock validation so the site unlocks only when the visitor enters an allowed username (exactly \"tingi99\" or \"meow99\") AND the existing 4-digit code (exactly \"5699\").",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/hooks/usePasswordGate.ts",
-          "frontend/src/components/PasswordGate.tsx",
-          "frontend/src/App.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/hooks/usePasswordGate.ts",
-          "frontend/src/components/PasswordGate.tsx"
-        ]
-      },
-      {
-        "id": "REQ-56",
-        "summary": "Persist the unlocked state for the current browser session only when BOTH username + code are valid, and ensure the existing \"Lock\" action fully re-locks the site so the username+code screen is shown again.",
+        "id": "REQ-62",
+        "summary": "Persist the successfully-unlocked username (\"tingi99\" or \"meow99\") in sessionStorage and expose it via the existing password-gate state so the rest of the UI can determine which unlock role is active; ensure the stored username is cleared when the visitor uses the existing Lock action.",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/hooks/usePasswordGate.ts",
           "frontend/src/App.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/hooks/usePasswordGate.ts"
+          "frontend/src/hooks/usePasswordGate.ts",
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-63",
+        "summary": "Apply username-based memory visibility rules only to the Memories list and the Memory full-screen viewer: when unlocked as \"tingi99\", show all memories; when unlocked as \"meow99\", show only memories submitted by the current visitor (i.e., memories whose submitter Principal matches the currently active Internet Identity Principal used by the frontend actor/identity).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/App.tsx",
+          "frontend/src/components/MemoryList.tsx",
+          "frontend/src/components/MemoryFullscreenViewer.tsx",
+          "frontend/src/components/MemoryList.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/App.tsx",
+          "frontend/src/components/MemoryList.tsx",
+          "frontend/src/components/MemoryFullscreenViewer.tsx",
+          "frontend/src/components/MemoryList.tsx"
+        ]
+      },
+      {
+        "id": "REQ-64",
+        "summary": "Enforce username-based memory editing rules only within the memory editing experience: when unlocked as \"tingi99\", keep the existing rule that only the original submitter can edit; when unlocked as \"meow99\", allow editing only for memories that are both (a) visible under the meow99 filter and (b) authored by the current Internet Identity Principal (do not allow editing any other memory).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/MemoryList.tsx",
+          "frontend/src/components/MemoryFullscreenViewer.tsx",
+          "frontend/src/components/MemoryEditDialog.tsx",
+          "frontend/src/components/MemoryList.tsx",
+          "frontend/src/components/MemoryFullscreenViewer.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/MemoryList.tsx",
+          "frontend/src/components/MemoryFullscreenViewer.tsx",
+          "frontend/src/components/MemoryEditDialog.tsx",
+          "frontend/src/components/MemoryList.tsx",
+          "frontend/src/components/MemoryFullscreenViewer.tsx"
         ]
       }
     ]
@@ -54,7 +66,10 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/components/PasswordGate.tsx",
+    "frontend/src/App.tsx",
+    "frontend/src/components/MemoryEditDialog.tsx",
+    "frontend/src/components/MemoryFullscreenViewer.tsx",
+    "frontend/src/components/MemoryList.tsx",
     "frontend/src/hooks/usePasswordGate.ts",
     "project_state.json",
     "scratch/component-selection.json",

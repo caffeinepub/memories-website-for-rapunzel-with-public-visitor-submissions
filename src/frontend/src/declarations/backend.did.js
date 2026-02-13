@@ -11,10 +11,16 @@ import { IDL } from '@icp-sdk/core/candid';
 export const Memory = IDL.Record({
   'id' : IDL.Nat64,
   'created' : IDL.Int,
+  'submitter' : IDL.Opt(IDL.Principal),
+  'edited' : IDL.Opt(IDL.Int),
   'text' : IDL.Text,
-  'author' : IDL.Opt(IDL.Text),
+  'author' : IDL.Text,
   'imageUrl' : IDL.Opt(IDL.Text),
   'videoUrl' : IDL.Opt(IDL.Text),
+});
+export const SubmitMemoryResponse = IDL.Variant({
+  'ok' : Memory,
+  'err' : IDL.Record({ 'message' : IDL.Text }),
 });
 export const Song = IDL.Record({
   'title' : IDL.Opt(IDL.Text),
@@ -28,12 +34,13 @@ export const YouTubeLink = IDL.Record({
   'url' : IDL.Text,
   'timestamp' : IDL.Int,
 });
-export const SubmitMemoryResponse = IDL.Variant({
-  'ok' : Memory,
-  'err' : IDL.Record({ 'message' : IDL.Text }),
-});
 
 export const idlService = IDL.Service({
+  'editMemory' : IDL.Func(
+      [IDL.Nat64, IDL.Text, IDL.Text, IDL.Opt(IDL.Text), IDL.Opt(IDL.Text)],
+      [SubmitMemoryResponse],
+      [],
+    ),
   'getAllMemories' : IDL.Func([], [IDL.Vec(Memory)], ['query']),
   'getAllSongs' : IDL.Func(
       [],
@@ -44,7 +51,7 @@ export const idlService = IDL.Service({
   'getSong' : IDL.Func([IDL.Nat64], [IDL.Opt(Song)], ['query']),
   'getYouTubeLinks' : IDL.Func([], [IDL.Vec(YouTubeLink)], ['query']),
   'submitMemory' : IDL.Func(
-      [IDL.Text, IDL.Opt(IDL.Text), IDL.Opt(IDL.Text), IDL.Opt(IDL.Text)],
+      [IDL.Text, IDL.Text, IDL.Opt(IDL.Text), IDL.Opt(IDL.Text)],
       [SubmitMemoryResponse],
       [],
     ),
@@ -69,10 +76,16 @@ export const idlFactory = ({ IDL }) => {
   const Memory = IDL.Record({
     'id' : IDL.Nat64,
     'created' : IDL.Int,
+    'submitter' : IDL.Opt(IDL.Principal),
+    'edited' : IDL.Opt(IDL.Int),
     'text' : IDL.Text,
-    'author' : IDL.Opt(IDL.Text),
+    'author' : IDL.Text,
     'imageUrl' : IDL.Opt(IDL.Text),
     'videoUrl' : IDL.Opt(IDL.Text),
+  });
+  const SubmitMemoryResponse = IDL.Variant({
+    'ok' : Memory,
+    'err' : IDL.Record({ 'message' : IDL.Text }),
   });
   const Song = IDL.Record({
     'title' : IDL.Opt(IDL.Text),
@@ -83,12 +96,13 @@ export const idlFactory = ({ IDL }) => {
     'bytes' : IDL.Vec(IDL.Nat8),
   });
   const YouTubeLink = IDL.Record({ 'url' : IDL.Text, 'timestamp' : IDL.Int });
-  const SubmitMemoryResponse = IDL.Variant({
-    'ok' : Memory,
-    'err' : IDL.Record({ 'message' : IDL.Text }),
-  });
   
   return IDL.Service({
+    'editMemory' : IDL.Func(
+        [IDL.Nat64, IDL.Text, IDL.Text, IDL.Opt(IDL.Text), IDL.Opt(IDL.Text)],
+        [SubmitMemoryResponse],
+        [],
+      ),
     'getAllMemories' : IDL.Func([], [IDL.Vec(Memory)], ['query']),
     'getAllSongs' : IDL.Func(
         [],
@@ -99,7 +113,7 @@ export const idlFactory = ({ IDL }) => {
     'getSong' : IDL.Func([IDL.Nat64], [IDL.Opt(Song)], ['query']),
     'getYouTubeLinks' : IDL.Func([], [IDL.Vec(YouTubeLink)], ['query']),
     'submitMemory' : IDL.Func(
-        [IDL.Text, IDL.Opt(IDL.Text), IDL.Opt(IDL.Text), IDL.Opt(IDL.Text)],
+        [IDL.Text, IDL.Text, IDL.Opt(IDL.Text), IDL.Opt(IDL.Text)],
         [SubmitMemoryResponse],
         [],
       ),

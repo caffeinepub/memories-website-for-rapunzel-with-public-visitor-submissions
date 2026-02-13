@@ -23,8 +23,10 @@ export interface YouTubeLink {
 export interface Memory {
     id: bigint;
     created: bigint;
+    submitter?: Principal;
+    edited?: bigint;
     text: string;
-    author?: string;
+    author: string;
     imageUrl?: string;
     videoUrl?: string;
 }
@@ -37,12 +39,13 @@ export interface Song {
     bytes: Uint8Array;
 }
 export interface backendInterface {
+    editMemory(id: bigint, newText: string, newAuthor: string, newImageUrl: string | null, newVideoUrl: string | null): Promise<SubmitMemoryResponse>;
     getAllMemories(): Promise<Array<Memory>>;
     getAllSongs(): Promise<Array<[bigint, Song]>>;
     getMemory(id: bigint): Promise<Memory | null>;
     getSong(id: bigint): Promise<Song | null>;
     getYouTubeLinks(): Promise<Array<YouTubeLink>>;
-    submitMemory(text: string, author: string | null, imageUrl: string | null, videoUrl: string | null): Promise<SubmitMemoryResponse>;
+    submitMemory(text: string, author: string, imageUrl: string | null, videoUrl: string | null): Promise<SubmitMemoryResponse>;
     submitYouTubeLink(url: string): Promise<boolean>;
     uploadSong(bytes: Uint8Array, fileName: string, artist: string | null, title: string | null, year: bigint | null, description: string | null): Promise<bigint>;
 }

@@ -44,6 +44,46 @@ export function useSubmitMemory() {
       }
       const response = await actor.submitMemory(
         text, 
+        author || 'Anonymous', 
+        imageUrl || null, 
+        videoUrl || null
+      );
+      if (response.__kind__ === 'err') {
+        throw new Error(response.err.message);
+      }
+      return response.ok;
+    },
+    onSuccess: () => {
+      // Invalidate and refetch memories
+      queryClient.invalidateQueries({ queryKey: ['memories'] });
+    },
+  });
+}
+
+export function useEditMemory() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ 
+      id,
+      text, 
+      author, 
+      imageUrl, 
+      videoUrl 
+    }: { 
+      id: bigint;
+      text: string; 
+      author: string;
+      imageUrl?: string | null;
+      videoUrl?: string | null;
+    }) => {
+      if (!actor) {
+        throw new Error('Backend connection not available');
+      }
+      const response = await actor.editMemory(
+        id,
+        text, 
         author, 
         imageUrl || null, 
         videoUrl || null

@@ -1,31 +1,64 @@
 import type { Memory } from '../backend';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
-import { ScrollArea } from './ui/scroll-area';
 import { Button } from './ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import { formatTimestamp } from '../lib/format';
-import { User, Calendar, ImageOff, Play, X } from 'lucide-react';
+import { User, Calendar, ImageOff, Play, Edit, Lock } from 'lucide-react';
 import { useState } from 'react';
 import { VideoViewer } from './VideoViewer';
+import { useInternetIdentity } from '../hooks/useInternetIdentity';
 
 interface MemoryFullscreenViewerProps {
   memory: Memory;
   isOpen: boolean;
   onClose: () => void;
+  onEdit: () => void;
+  unlockedUsername: string;
+  currentPrincipal: string;
 }
 
-export function MemoryFullscreenViewer({ memory, isOpen, onClose }: MemoryFullscreenViewerProps) {
+export function MemoryFullscreenViewer({ 
+  memory, 
+  isOpen, 
+  onClose, 
+  onEdit,
+  unlockedUsername,
+  currentPrincipal
+}: MemoryFullscreenViewerProps) {
   const [imageError, setImageError] = useState(false);
   const [isVideoViewerOpen, setIsVideoViewerOpen] = useState(false);
+  const { identity } = useInternetIdentity();
+
+  // Check visibility: meow99 can only see their own memories
+  const canView = unlockedUsername === 'tingi99' || 
+    (unlockedUsername === 'meow99' && memory.submitter && memory.submitter.toString() === currentPrincipal);
+
+  // Check if current user can edit this memory
+  const canEdit = memory.submitter && identity 
+    ? memory.submitter.toString() === identity.getPrincipal().toString()
+    : false;
 
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-4xl h-[90vh] flex flex-col p-0 gap-0">
-          <DialogHeader className="px-6 pt-6 pb-4 border-b border-border/50 shrink-0">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1 space-y-2">
-                <DialogTitle className="text-2xl font-serif">Memory</DialogTitle>
-                <div className="flex items-center gap-4 flex-wrap text-sm text-muted-foreground">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          {!canView ? (
+            <div className="py-12 text-center">
+              <Lock className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+              <DialogTitle className="text-xl mb-2">Access Restricted</DialogTitle>
+              <p className="text-muted-foreground">
+                You do not have permission to view this memory.
+              </p>
+            </div>
+          ) : (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-2xl font-serif">Memory Details</DialogTitle>
+              </DialogHeader>
+              
+              <div className="space-y-6">
+                {/* Metadata */}
+                <div className="flex items-center gap-4 flex-wrap text-sm text-muted-foreground border-b pb-4">
                   <div className="flex items-center gap-2">
                     <User className="w-4 h-4" />
                     <span className="font-medium">
@@ -38,64 +71,90 @@ export function MemoryFullscreenViewer({ memory, isOpen, onClose }: MemoryFullsc
                       {formatTimestamp(memory.created)}
                     </time>
                   </div>
+                  {memory.edited && (
+                    <div className="flex items-center gap-2 text-xs italic">
+                      <span>Edited {formatTimestamp(memory.edited)}</span>
+                    </div>
+                  )}
                 </div>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onClose}
-                aria-label="Close"
-              >
-                <X className="w-5 h-5" />
-              </Button>
-            </div>
-          </DialogHeader>
 
-          <ScrollArea className="flex-1 px-6 py-6">
-            <div className="space-y-6 max-w-3xl mx-auto">
-              {/* Memory Text */}
-              <div className="text-lg leading-relaxed whitespace-pre-wrap break-words">
-                {memory.text}
-              </div>
+                {/* Text Content */}
+                <div className="prose prose-sm max-w-none">
+                  <p className="text-base leading-relaxed whitespace-pre-wrap break-words">
+                    {memory.text}
+                  </p>
+                </div>
 
-              {/* Media */}
-              {(memory.imageUrl || memory.videoUrl) && (
-                <div className="space-y-4">
-                  {memory.imageUrl && !imageError && (
-                    <div className="rounded-lg overflow-hidden border bg-muted">
-                      <img 
-                        src={memory.imageUrl} 
-                        alt="Memory attachment" 
-                        className="w-full h-auto object-contain"
-                        onError={() => setImageError(true)}
-                      />
-                    </div>
-                  )}
-                  
-                  {memory.imageUrl && imageError && (
-                    <div className="rounded-lg border bg-muted p-12 flex flex-col items-center justify-center text-muted-foreground">
-                      <ImageOff className="w-16 h-16 mb-3 opacity-50" />
-                      <p className="text-sm text-center">Image unavailable</p>
-                    </div>
-                  )}
-                  
-                  {memory.videoUrl && (
-                    <div className="rounded-lg border bg-muted p-12 flex flex-col items-center justify-center">
-                      <Play className="w-16 h-16 mb-4 text-primary" />
+                {/* Media */}
+                {(memory.imageUrl || memory.videoUrl) && (
+                  <div className="space-y-4">
+                    {memory.imageUrl && !imageError && (
+                      <div className="rounded-lg overflow-hidden border bg-muted">
+                        <img 
+                          src={memory.imageUrl} 
+                          alt="Memory attachment" 
+                          className="w-full h-auto object-contain max-h-[500px]"
+                          onError={() => setImageError(true)}
+                        />
+                      </div>
+                    )}
+                    
+                    {memory.imageUrl && imageError && (
+                      <div className="rounded-lg border bg-muted p-12 flex flex-col items-center justify-center text-muted-foreground">
+                        <ImageOff className="w-12 h-12 mb-3 opacity-50" />
+                        <p className="text-sm text-center">Image unavailable</p>
+                      </div>
+                    )}
+                    
+                    {memory.videoUrl && (
                       <Button
                         onClick={() => setIsVideoViewerOpen(true)}
-                        variant="default"
-                        size="lg"
+                        variant="outline"
+                        className="gap-2"
                       >
-                        <Play className="w-5 h-5 mr-2" />
-                        Open Video
+                        <Play className="w-4 h-4" />
+                        Play Video
                       </Button>
-                    </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Actions */}
+                <div className="flex justify-end gap-2 pt-4 border-t">
+                  {canEdit ? (
+                    <Button
+                      onClick={onEdit}
+                      variant="default"
+                      className="gap-2"
+                    >
+                      <Edit className="w-4 h-4" />
+                      Edit Memory
+                    </Button>
+                  ) : (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span>
+                            <Button
+                              disabled
+                              variant="default"
+                              className="gap-2"
+                            >
+                              <Edit className="w-4 h-4" />
+                              Edit Memory
+                            </Button>
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Only the original author can edit this memory</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   )}
                 </div>
-              )}
-            </div>
-          </ScrollArea>
+              </div>
+            </>
+          )}
         </DialogContent>
       </Dialog>
 

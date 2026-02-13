@@ -7,15 +7,44 @@ import { YouTubeLinksDialog } from './components/YouTubeLinksDialog';
 import { useMemories } from './hooks/useMemories';
 import { usePasswordGate } from './hooks/usePasswordGate';
 import { useWelcomeGate } from './hooks/useWelcomeGate';
+import { useInternetIdentity } from './hooks/useInternetIdentity';
 import { Sparkles, Lock, Link as LinkIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 function App() {
   const { memories, isLoading, error } = useMemories();
-  const { isUnlocked, isInitializing: isPasswordInitializing, unlock, lock } = usePasswordGate();
+  const { isUnlocked, unlockedUsername, isInitializing: isPasswordInitializing, unlock, lock } = usePasswordGate();
   const { isDismissed, isInitializing: isWelcomeInitializing, dismiss, reset } = useWelcomeGate();
+  const { identity } = useInternetIdentity();
   const [isYouTubeLinksOpen, setIsYouTubeLinksOpen] = useState(false);
+
+  // Filter memories based on unlocked username
+  const filteredMemories = useMemo(() => {
+    if (!memories || !unlockedUsername) return memories || [];
+    
+    if (unlockedUsername === 'tingi99') {
+      // tingi99 sees all memories
+      return memories;
+    } else if (unlockedUsername === 'meow99') {
+      // meow99 sees only their own memories
+      if (!identity) return [];
+      const currentPrincipal = identity.getPrincipal().toString();
+      return memories.filter(memory => 
+        memory.submitter && memory.submitter.toString() === currentPrincipal
+      );
+    }
+    
+    return memories;
+  }, [memories, unlockedUsername, identity]);
+
+  // Custom empty state message for meow99
+  const emptyStateMessage = useMemo(() => {
+    if (unlockedUsername === 'meow99') {
+      return 'You have no memories yet. Only memories you submit will be visible here.';
+    }
+    return 'No memories yet. Be the first to share a special moment!';
+  }, [unlockedUsername]);
 
   // Show nothing while checking session storage
   if (isPasswordInitializing || isWelcomeInitializing) {
@@ -115,7 +144,7 @@ function App() {
           <div className="flex items-center gap-3 mb-8">
             <div className="h-px flex-1 bg-border" />
             <h3 className="text-2xl font-serif font-semibold text-foreground">
-              Shared Memories ({memories?.length || 0})
+              Shared Memories ({filteredMemories?.length || 0})
             </h3>
             <div className="h-px flex-1 bg-border" />
           </div>
@@ -132,8 +161,13 @@ function App() {
             </div>
           )}
 
-          {!isLoading && !error && memories && (
-            <MemoryList memories={memories} />
+          {!isLoading && !error && filteredMemories && (
+            <MemoryList 
+              memories={filteredMemories} 
+              emptyStateMessage={emptyStateMessage}
+              unlockedUsername={unlockedUsername || 'tingi99'}
+              currentPrincipal={identity?.getPrincipal().toString() || ''}
+            />
           )}
         </section>
       </main>

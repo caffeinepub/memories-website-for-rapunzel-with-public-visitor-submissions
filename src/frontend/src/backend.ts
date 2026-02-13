@@ -105,8 +105,10 @@ export interface YouTubeLink {
 export interface Memory {
     id: bigint;
     created: bigint;
+    submitter?: Principal;
+    edited?: bigint;
     text: string;
-    author?: string;
+    author: string;
     imageUrl?: string;
     videoUrl?: string;
 }
@@ -119,72 +121,87 @@ export interface Song {
     bytes: Uint8Array;
 }
 export interface backendInterface {
+    editMemory(id: bigint, newText: string, newAuthor: string, newImageUrl: string | null, newVideoUrl: string | null): Promise<SubmitMemoryResponse>;
     getAllMemories(): Promise<Array<Memory>>;
     getAllSongs(): Promise<Array<[bigint, Song]>>;
     getMemory(id: bigint): Promise<Memory | null>;
     getSong(id: bigint): Promise<Song | null>;
     getYouTubeLinks(): Promise<Array<YouTubeLink>>;
-    submitMemory(text: string, author: string | null, imageUrl: string | null, videoUrl: string | null): Promise<SubmitMemoryResponse>;
+    submitMemory(text: string, author: string, imageUrl: string | null, videoUrl: string | null): Promise<SubmitMemoryResponse>;
     submitYouTubeLink(url: string): Promise<boolean>;
     uploadSong(bytes: Uint8Array, fileName: string, artist: string | null, title: string | null, year: bigint | null, description: string | null): Promise<bigint>;
 }
 import type { Memory as _Memory, Song as _Song, SubmitMemoryResponse as _SubmitMemoryResponse } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
+    async editMemory(arg0: bigint, arg1: string, arg2: string, arg3: string | null, arg4: string | null): Promise<SubmitMemoryResponse> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.editMemory(arg0, arg1, arg2, to_candid_opt_n1(this._uploadFile, this._downloadFile, arg3), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg4));
+                return from_candid_SubmitMemoryResponse_n2(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.editMemory(arg0, arg1, arg2, to_candid_opt_n1(this._uploadFile, this._downloadFile, arg3), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg4));
+            return from_candid_SubmitMemoryResponse_n2(this._uploadFile, this._downloadFile, result);
+        }
+    }
     async getAllMemories(): Promise<Array<Memory>> {
         if (this.processError) {
             try {
                 const result = await this.actor.getAllMemories();
-                return from_candid_vec_n1(this._uploadFile, this._downloadFile, result);
+                return from_candid_vec_n9(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getAllMemories();
-            return from_candid_vec_n1(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n9(this._uploadFile, this._downloadFile, result);
         }
     }
     async getAllSongs(): Promise<Array<[bigint, Song]>> {
         if (this.processError) {
             try {
                 const result = await this.actor.getAllSongs();
-                return from_candid_vec_n5(this._uploadFile, this._downloadFile, result);
+                return from_candid_vec_n10(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getAllSongs();
-            return from_candid_vec_n5(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n10(this._uploadFile, this._downloadFile, result);
         }
     }
     async getMemory(arg0: bigint): Promise<Memory | null> {
         if (this.processError) {
             try {
                 const result = await this.actor.getMemory(arg0);
-                return from_candid_opt_n10(this._uploadFile, this._downloadFile, result);
+                return from_candid_opt_n15(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getMemory(arg0);
-            return from_candid_opt_n10(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n15(this._uploadFile, this._downloadFile, result);
         }
     }
     async getSong(arg0: bigint): Promise<Song | null> {
         if (this.processError) {
             try {
                 const result = await this.actor.getSong(arg0);
-                return from_candid_opt_n11(this._uploadFile, this._downloadFile, result);
+                return from_candid_opt_n16(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getSong(arg0);
-            return from_candid_opt_n11(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n16(this._uploadFile, this._downloadFile, result);
         }
     }
     async getYouTubeLinks(): Promise<Array<YouTubeLink>> {
@@ -201,18 +218,18 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async submitMemory(arg0: string, arg1: string | null, arg2: string | null, arg3: string | null): Promise<SubmitMemoryResponse> {
+    async submitMemory(arg0: string, arg1: string, arg2: string | null, arg3: string | null): Promise<SubmitMemoryResponse> {
         if (this.processError) {
             try {
-                const result = await this.actor.submitMemory(arg0, to_candid_opt_n12(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n12(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n12(this._uploadFile, this._downloadFile, arg3));
-                return from_candid_SubmitMemoryResponse_n13(this._uploadFile, this._downloadFile, result);
+                const result = await this.actor.submitMemory(arg0, arg1, to_candid_opt_n1(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg3));
+                return from_candid_SubmitMemoryResponse_n2(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.submitMemory(arg0, to_candid_opt_n12(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n12(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n12(this._uploadFile, this._downloadFile, arg3));
-            return from_candid_SubmitMemoryResponse_n13(this._uploadFile, this._downloadFile, result);
+            const result = await this.actor.submitMemory(arg0, arg1, to_candid_opt_n1(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg3));
+            return from_candid_SubmitMemoryResponse_n2(this._uploadFile, this._downloadFile, result);
         }
     }
     async submitYouTubeLink(arg0: string): Promise<boolean> {
@@ -232,64 +249,46 @@ export class Backend implements backendInterface {
     async uploadSong(arg0: Uint8Array, arg1: string, arg2: string | null, arg3: string | null, arg4: bigint | null, arg5: string | null): Promise<bigint> {
         if (this.processError) {
             try {
-                const result = await this.actor.uploadSong(arg0, arg1, to_candid_opt_n12(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n12(this._uploadFile, this._downloadFile, arg3), to_candid_opt_n15(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n12(this._uploadFile, this._downloadFile, arg5));
+                const result = await this.actor.uploadSong(arg0, arg1, to_candid_opt_n1(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg3), to_candid_opt_n17(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg5));
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.uploadSong(arg0, arg1, to_candid_opt_n12(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n12(this._uploadFile, this._downloadFile, arg3), to_candid_opt_n15(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n12(this._uploadFile, this._downloadFile, arg5));
+            const result = await this.actor.uploadSong(arg0, arg1, to_candid_opt_n1(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg3), to_candid_opt_n17(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n1(this._uploadFile, this._downloadFile, arg5));
             return result;
         }
     }
 }
-function from_candid_Memory_n2(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Memory): Memory {
-    return from_candid_record_n3(_uploadFile, _downloadFile, value);
+function from_candid_Memory_n4(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Memory): Memory {
+    return from_candid_record_n5(_uploadFile, _downloadFile, value);
 }
-function from_candid_Song_n7(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Song): Song {
-    return from_candid_record_n8(_uploadFile, _downloadFile, value);
+function from_candid_Song_n12(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Song): Song {
+    return from_candid_record_n13(_uploadFile, _downloadFile, value);
 }
-function from_candid_SubmitMemoryResponse_n13(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _SubmitMemoryResponse): SubmitMemoryResponse {
-    return from_candid_variant_n14(_uploadFile, _downloadFile, value);
+function from_candid_SubmitMemoryResponse_n2(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _SubmitMemoryResponse): SubmitMemoryResponse {
+    return from_candid_variant_n3(_uploadFile, _downloadFile, value);
 }
-function from_candid_opt_n10(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_Memory]): Memory | null {
-    return value.length === 0 ? null : from_candid_Memory_n2(_uploadFile, _downloadFile, value[0]);
-}
-function from_candid_opt_n11(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_Song]): Song | null {
-    return value.length === 0 ? null : from_candid_Song_n7(_uploadFile, _downloadFile, value[0]);
-}
-function from_candid_opt_n4(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [string]): string | null {
+function from_candid_opt_n14(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [bigint]): bigint | null {
     return value.length === 0 ? null : value[0];
 }
-function from_candid_opt_n9(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [bigint]): bigint | null {
+function from_candid_opt_n15(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_Memory]): Memory | null {
+    return value.length === 0 ? null : from_candid_Memory_n4(_uploadFile, _downloadFile, value[0]);
+}
+function from_candid_opt_n16(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_Song]): Song | null {
+    return value.length === 0 ? null : from_candid_Song_n12(_uploadFile, _downloadFile, value[0]);
+}
+function from_candid_opt_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [Principal]): Principal | null {
     return value.length === 0 ? null : value[0];
 }
-function from_candid_record_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
-    id: bigint;
-    created: bigint;
-    text: string;
-    author: [] | [string];
-    imageUrl: [] | [string];
-    videoUrl: [] | [string];
-}): {
-    id: bigint;
-    created: bigint;
-    text: string;
-    author?: string;
-    imageUrl?: string;
-    videoUrl?: string;
-} {
-    return {
-        id: value.id,
-        created: value.created,
-        text: value.text,
-        author: record_opt_to_undefined(from_candid_opt_n4(_uploadFile, _downloadFile, value.author)),
-        imageUrl: record_opt_to_undefined(from_candid_opt_n4(_uploadFile, _downloadFile, value.imageUrl)),
-        videoUrl: record_opt_to_undefined(from_candid_opt_n4(_uploadFile, _downloadFile, value.videoUrl))
-    };
+function from_candid_opt_n7(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [bigint]): bigint | null {
+    return value.length === 0 ? null : value[0];
 }
-function from_candid_record_n8(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+function from_candid_opt_n8(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [string]): string | null {
+    return value.length === 0 ? null : value[0];
+}
+function from_candid_record_n13(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     title: [] | [string];
     year: [] | [bigint];
     description: [] | [string];
@@ -305,21 +304,51 @@ function from_candid_record_n8(_uploadFile: (file: ExternalBlob) => Promise<Uint
     bytes: Uint8Array;
 } {
     return {
-        title: record_opt_to_undefined(from_candid_opt_n4(_uploadFile, _downloadFile, value.title)),
-        year: record_opt_to_undefined(from_candid_opt_n9(_uploadFile, _downloadFile, value.year)),
-        description: record_opt_to_undefined(from_candid_opt_n4(_uploadFile, _downloadFile, value.description)),
+        title: record_opt_to_undefined(from_candid_opt_n8(_uploadFile, _downloadFile, value.title)),
+        year: record_opt_to_undefined(from_candid_opt_n14(_uploadFile, _downloadFile, value.year)),
+        description: record_opt_to_undefined(from_candid_opt_n8(_uploadFile, _downloadFile, value.description)),
         fileName: value.fileName,
-        artist: record_opt_to_undefined(from_candid_opt_n4(_uploadFile, _downloadFile, value.artist)),
+        artist: record_opt_to_undefined(from_candid_opt_n8(_uploadFile, _downloadFile, value.artist)),
         bytes: value.bytes
     };
 }
-function from_candid_tuple_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [bigint, _Song]): [bigint, Song] {
+function from_candid_record_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    id: bigint;
+    created: bigint;
+    submitter: [] | [Principal];
+    edited: [] | [bigint];
+    text: string;
+    author: string;
+    imageUrl: [] | [string];
+    videoUrl: [] | [string];
+}): {
+    id: bigint;
+    created: bigint;
+    submitter?: Principal;
+    edited?: bigint;
+    text: string;
+    author: string;
+    imageUrl?: string;
+    videoUrl?: string;
+} {
+    return {
+        id: value.id,
+        created: value.created,
+        submitter: record_opt_to_undefined(from_candid_opt_n6(_uploadFile, _downloadFile, value.submitter)),
+        edited: record_opt_to_undefined(from_candid_opt_n7(_uploadFile, _downloadFile, value.edited)),
+        text: value.text,
+        author: value.author,
+        imageUrl: record_opt_to_undefined(from_candid_opt_n8(_uploadFile, _downloadFile, value.imageUrl)),
+        videoUrl: record_opt_to_undefined(from_candid_opt_n8(_uploadFile, _downloadFile, value.videoUrl))
+    };
+}
+function from_candid_tuple_n11(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [bigint, _Song]): [bigint, Song] {
     return [
         value[0],
-        from_candid_Song_n7(_uploadFile, _downloadFile, value[1])
+        from_candid_Song_n12(_uploadFile, _downloadFile, value[1])
     ];
 }
-function from_candid_variant_n14(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+function from_candid_variant_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     ok: _Memory;
 } | {
     err: {
@@ -336,22 +365,22 @@ function from_candid_variant_n14(_uploadFile: (file: ExternalBlob) => Promise<Ui
 } {
     return "ok" in value ? {
         __kind__: "ok",
-        ok: from_candid_Memory_n2(_uploadFile, _downloadFile, value.ok)
+        ok: from_candid_Memory_n4(_uploadFile, _downloadFile, value.ok)
     } : "err" in value ? {
         __kind__: "err",
         err: value.err
     } : value;
 }
-function from_candid_vec_n1(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_Memory>): Array<Memory> {
-    return value.map((x)=>from_candid_Memory_n2(_uploadFile, _downloadFile, x));
+function from_candid_vec_n10(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<[bigint, _Song]>): Array<[bigint, Song]> {
+    return value.map((x)=>from_candid_tuple_n11(_uploadFile, _downloadFile, x));
 }
-function from_candid_vec_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<[bigint, _Song]>): Array<[bigint, Song]> {
-    return value.map((x)=>from_candid_tuple_n6(_uploadFile, _downloadFile, x));
+function from_candid_vec_n9(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_Memory>): Array<Memory> {
+    return value.map((x)=>from_candid_Memory_n4(_uploadFile, _downloadFile, x));
 }
-function to_candid_opt_n12(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: string | null): [] | [string] {
+function to_candid_opt_n1(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: string | null): [] | [string] {
     return value === null ? candid_none() : candid_some(value);
 }
-function to_candid_opt_n15(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: bigint | null): [] | [bigint] {
+function to_candid_opt_n17(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: bigint | null): [] | [bigint] {
     return value === null ? candid_none() : candid_some(value);
 }
 export interface CreateActorOptions {
