@@ -1,102 +1,70 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Replace Tingi with deterministic Piddu helper widget (frontend-only)",
+  "title": "Username + 4-digit code lock screen gate (tingi99/meow99 + 5699)",
   "requirements": [
     {
-      "id": "REQ-36",
-      "summary": "Replace the Tingi assistant UI with a new bottom-right floating “Piddu” widget featuring a new chat-style look, history, input, send, open/close, and loading state.",
+      "id": "REQ-54",
+      "summary": "Add a username input above the existing 4-digit access code input on the PasswordGate with clear English labels and helper text.",
       "acceptanceCriteria": [
-        "The main memories experience (after password gate + welcome page dismissal) shows a floating bottom-right launcher for “Piddu”.",
-        "The widget’s visible name is “Piddu” (not “Tingi”) in the launcher aria-labels, dialog header/title, and any empty/welcome text.",
-        "Piddu’s UI styling/layout is clearly different from the existing TingiWidget look (new visual design while still matching the site’s warm theme and shadcn/Tailwind patterns).",
-        "All user-facing text in the Piddu widget is in English and does not reference Google, chrome.com, or searching.",
-        "The widget supports: open/close, message history, user input, send action, and a loading state before showing a deterministic response."
+        "The lock screen displays a new \"Username\" input field above the existing \"Access Code\" (PIN) field.",
+        "All user-facing text in the lock screen remains in English and matches the site’s warm visual theme (Tailwind + shadcn).",
+        "The username field accepts free-typed text (not numeric-only), while the access code field remains numeric-only and limited to 4 digits."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/PidduWidget.tsx",
-          "operation": "create",
-          "description": "Create a new floating bottom-right “Piddu” chat widget with a new visual design (distinct from TingiWidget) using shadcn-ui dialog/input/button/scroll-area patterns and Tailwind styling. Include: launcher button with aria-label naming “Piddu”, modal header/title “Piddu”, empty/welcome state text in English, message history rendering (user vs Piddu), open/close behavior, send action, and a visible loading indicator shown between send and response. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/public/assets/generated/piddu-icon.dim_128x128.png",
-          "operation": "create",
-          "description": "Add the generated rounded friendly mascot icon illustration asset at frontend/public/assets/generated/piddu-icon.dim_128x128.png and ensure PidduWidget references this exact file for the launcher and header icon."
-        },
-        {
-          "path": "frontend/src/components/TingiWidget.tsx",
-          "operation": "delete",
-          "description": "Remove the existing Tingi widget UI implementation so it cannot be rendered or referenced by the app."
-        }
-      ]
-    },
-    {
-      "id": "REQ-37",
-      "summary": "Implement deterministic, fully-frontend Piddu responses with no external APIs, no LLM calls, and no backend calls, while still showing a loading state.",
-      "acceptanceCriteria": [
-        "Submitting a message never triggers network requests for search/summarization (no calls to backend search endpoints and no calls to Google Custom Search).",
-        "Piddu returns responses generated from deterministic/scripted templates (e.g., pattern-based replies) and consistently works offline once the app is loaded.",
-        "The UI shows an in-progress/loading indicator between send and response, even though the response is deterministic."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/lib/pidduDeterministic.ts",
-          "operation": "create",
-          "description": "Implement deterministic/scripted response generation utilities for Piddu (pattern-based matching + fallback replies) with no network usage. Export a small API that the PidduWidget can call to produce replies consistently offline."
-        },
-        {
-          "path": "frontend/src/components/PidduWidget.tsx",
+          "path": "frontend/src/components/PasswordGate.tsx",
           "operation": "modify",
-          "description": "Wire the deterministic response generator into the widget: on send, append the user message, display a loading/in-progress message/state, then after a short timeout replace it with the deterministic Piddu reply from frontend/src/lib/pidduDeterministic.ts. Ensure no React Query mutations, no backend actor usage, and no fetch/XHR usage occur. Verify the component's usage instructions before implementing."
+          "description": "Update the PasswordGate UI to include a new text-based \"Username\" field positioned above the existing numeric-only 4-digit \"Access Code\" field, with English helper text. Use shadcn-ui building blocks already in use (Card, Input, Label, Button, Alert) to preserve the warm Tailwind + shadcn look and feel. Verify the component's usage instructions before implementing."
         }
       ]
     },
     {
-      "id": "REQ-38",
-      "summary": "Remove all Tingi search wiring and unused Tingi-related frontend modules so the build contains no active Tingi search flow.",
+      "id": "REQ-55",
+      "summary": "Require exact allowed username (tingi99 or meow99) AND exact 4-digit code (5699) to unlock; show clear English error messaging without revealing additional secrets.",
       "acceptanceCriteria": [
-        "frontend/src/components/TingiWidget.tsx is removed or replaced such that it no longer imports or uses useTingiSearch and no longer renders Tingi branding or search-related UI.",
-        "frontend/src/hooks/useQueries.ts no longer exports useTingiSearch and is updated/cleaned up to avoid dead code related to Tingi search.",
-        "frontend/src/hooks/useTingiConfig.ts is removed or updated so it is not referenced by the UI (and no longer mentions backend Google Custom Search credential handling).",
-        "The frontend compiles without references to Tingi search types (e.g., TingiResponse) and without unused/empty placeholder search/humor modules being required at runtime."
+        "Entering username \"tingi99\" with access code \"5699\" unlocks the site.",
+        "Entering username \"meow99\" with access code \"5699\" unlocks the site.",
+        "Any other username value does not unlock the site, even if the code is correct.",
+        "Any incorrect code does not unlock the site, even if the username is one of the allowed values.",
+        "Error messaging is shown in English and clearly distinguishes invalid credentials (e.g., \"Incorrect username or code. Please try again.\") without revealing any new secrets beyond the allowed usernames already specified by the user."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/useQueries.ts",
+          "path": "frontend/src/hooks/usePasswordGate.ts",
           "operation": "modify",
-          "description": "Remove the Tingi search mutation (useTingiSearch) and any imports/types tied to Tingi search so no Tingi search logic remains in this hooks module."
+          "description": "Update the password gate unlock logic to validate BOTH fields: username must be exactly one of the two allowed values (\"tingi99\" or \"meow99\") and code must be exactly \"5699\". Adjust the unlock function signature to accept username+code together while keeping the mechanism fully frontend/session-based."
         },
         {
-          "path": "frontend/src/hooks/useTingiConfig.ts",
-          "operation": "delete",
-          "description": "Remove the unused Tingi configuration hook so it is not referenced by the UI and contains no credential/search-related language."
+          "path": "frontend/src/components/PasswordGate.tsx",
+          "operation": "modify",
+          "description": "Update form submission to call the new unlock API with both username and access code, and display a single English error message for invalid credentials (e.g., \"Incorrect username or code. Please try again.\") without adding any UI to configure usernames/codes. Keep inputs constrained: username free-typed text; code numeric-only limited to 4 digits. Use existing shadcn-ui Alert for errors. Verify the component's usage instructions before implementing."
         },
-        {
-          "path": "frontend/src/lib/googleCustomSearch.ts",
-          "operation": "delete",
-          "description": "Remove the placeholder Google Custom Search frontend module so it cannot be accidentally imported or required at runtime."
-        },
-        {
-          "path": "frontend/src/lib/tingiHumor.ts",
-          "operation": "delete",
-          "description": "Remove the placeholder Tingi humor module so it cannot be accidentally imported or required at runtime."
-        }
-      ]
-    },
-    {
-      "id": "REQ-40",
-      "summary": "Render Piddu only within the unlocked + welcome-dismissed memories experience by swapping the widget in App shell at the existing gating point.",
-      "acceptanceCriteria": [
-        "frontend/src/App.tsx no longer imports/renders TingiWidget and instead imports/renders the new Piddu widget at the same gating point (unlocked + welcome dismissed).",
-        "Piddu is not visible on the password gate screen or the welcome page screen.",
-        "The rest of the site layout (header, hero, submission form, memory list, footer) remains unchanged aside from the widget swap."
-      ],
-      "file_operations": [
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Replace the TingiWidget import/render with PidduWidget, keeping it rendered only in the existing unlocked + welcome dismissed branch. Ensure Piddu does not appear on PasswordGate or WelcomePage screens, and keep the rest of the layout unchanged. Verify the component's usage instructions before implementing."
+          "description": "Wire the updated PasswordGate unlock callback signature from usePasswordGate into the PasswordGate component so the app unlock flow still works with the new username+code validation."
+        }
+      ]
+    },
+    {
+      "id": "REQ-56",
+      "summary": "Persist unlocked state for the browser session only after successful username+code validation, and ensure the existing Lock action fully re-locks and shows the gate again.",
+      "acceptanceCriteria": [
+        "After a successful unlock with a valid username + \"5699\", refreshing the page during the same browser session does not re-prompt for credentials (same behavior as before, now gated by both fields).",
+        "Clicking the existing \"Lock\" button returns the visitor to the username+code gate and clears the session’s unlocked state so a refresh shows the gate again.",
+        "No backend changes are required for this persistence behavior (session-only browser storage remains the mechanism)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/usePasswordGate.ts",
+          "operation": "modify",
+          "description": "Ensure sessionStorage unlocked persistence is written only after BOTH username and code are validated successfully, and that the existing lock() implementation fully clears the session flag so refresh re-prompts."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Confirm the existing \"Lock\" actions continue to call the password-gate lock() function so the app returns to the username+code gate immediately and remains locked across refresh within the same session."
         }
       ]
     }

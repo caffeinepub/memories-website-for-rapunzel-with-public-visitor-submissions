@@ -2,11 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-remove-the-existing-tingi-search-assistant-experience-and-replace-it-with-a-new-bottom-right-floating-helper-widget-named-piddu-that-simulates-a-chatgpt-style-chat-experience-using-deterministic-scripted-behavior-only-with-a-fully-new-ui-look",
-      "featureTitle": "Remove the existing Tingi search assistant experience and replace it with a new bottom-right floating helper widget named “Piddu” that simulates a ChatGPT-style chat experience using deterministic/scripted behavior only, with a fully new UI look.",
+      "featureId": "feature-update-the-lock-screen-passwordgate-ui-to-include-a-username-input-section-positioned-above-the-existing-4-digit-pin-input-and-use-clear-english-labels-and-helper-text",
+      "featureTitle": "Update the lock screen (PasswordGate) UI to include a username input section positioned above the existing 4-digit PIN input, and use clear English labels and helper text.",
       "files": [
-        "frontend/src/components/PidduWidget.tsx",
-        "frontend/src/components/TingiWidget.tsx"
+        "frontend/src/components/PasswordGate.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -17,16 +16,16 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-36"
+        "REQ-54"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-implement-piddu-s-responses-entirely-on-the-frontend-using-deterministic-logic-no-llm-calls-no-external-apis-and-no-backend-calls",
-      "featureTitle": "Implement Piddu’s responses entirely on the frontend using deterministic logic (no LLM calls, no external APIs, and no backend calls).",
+      "featureId": "feature-change-the-lock-unlock-validation-so-the-site-unlocks-only-when-the-visitor-enters-an-allowed-username-exactly-tingi99-or-meow99-and-the-existing-4-digit-code-exactly-5699",
+      "featureTitle": "Change the lock/unlock validation so the site unlocks only when the visitor enters an allowed username (exactly \"tingi99\" or \"meow99\") AND the existing 4-digit code (exactly \"5699\").",
       "files": [
-        "frontend/src/components/PidduWidget.tsx",
-        "frontend/src/lib/pidduDeterministic.ts"
+        "frontend/src/components/PasswordGate.tsx",
+        "frontend/src/hooks/usePasswordGate.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -37,16 +36,15 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-37"
+        "REQ-55"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-remove-tingi-search-wiring-from-the-frontend-including-the-react-query-mutation-hook-and-any-unused-tingi-configuration-search-helper-modules-so-the-build-contains-no-active-tingi-search-flow",
-      "featureTitle": "Remove Tingi search wiring from the frontend, including the React Query mutation hook and any unused Tingi configuration/search helper modules, so the build contains no active Tingi search flow.",
+      "featureId": "feature-persist-the-unlocked-state-for-the-current-browser-session-only-when-both-username-code-are-valid-and-ensure-the-existing-lock-action-fully-re-locks-the-site-so-the-username-code-screen-is-shown-again",
+      "featureTitle": "Persist the unlocked state for the current browser session only when BOTH username + code are valid, and ensure the existing \"Lock\" action fully re-locks the site so the username+code screen is shown again.",
       "files": [
-        "frontend/src/hooks/useQueries.ts",
-        "frontend/src/hooks/useTingiConfig.ts"
+        "frontend/src/hooks/usePasswordGate.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -57,26 +55,7 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-38"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-update-the-app-shell-to-render-the-new-piddu-widget-instead-of-tingiwidget-only-in-the-main-memories-experience-after-the-visitor-unlocks-with-the-4-digit-code-and-dismisses-the-welcome-page",
-      "featureTitle": "Update the app shell to render the new Piddu widget (instead of TingiWidget) only in the main memories experience (after the visitor unlocks with the 4-digit code and dismisses the welcome page).",
-      "files": [
-        "frontend/src/App.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "http-outcalls@3.0.0"
-      ],
-      "testIds": [
-        "REQ-40"
+        "REQ-56"
       ],
       "confidence": "high"
     }

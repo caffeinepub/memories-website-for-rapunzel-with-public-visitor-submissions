@@ -2,9 +2,10 @@ import type { Memory } from '../backend';
 import { Card, CardContent, CardHeader } from './ui/card';
 import { Button } from './ui/button';
 import { formatTimestamp } from '../lib/format';
-import { User, Calendar, ImageOff, Play } from 'lucide-react';
+import { User, Calendar, ImageOff, Play, Maximize2 } from 'lucide-react';
 import { useState } from 'react';
 import { VideoViewer } from './VideoViewer';
+import { MemoryFullscreenViewer } from './MemoryFullscreenViewer';
 
 interface MemoryListProps {
   memories: Memory[];
@@ -38,6 +39,7 @@ export function MemoryList({ memories }: MemoryListProps) {
 function MemoryCard({ memory }: { memory: Memory }) {
   const [imageError, setImageError] = useState(false);
   const [isVideoViewerOpen, setIsVideoViewerOpen] = useState(false);
+  const [isFullscreenOpen, setIsFullscreenOpen] = useState(false);
 
   return (
     <>
@@ -50,11 +52,22 @@ function MemoryCard({ memory }: { memory: Memory }) {
                 {memory.author || 'Anonymous'}
               </span>
             </div>
-            <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4" />
-              <time dateTime={new Date(Number(memory.created) / 1000000).toISOString()}>
-                {formatTimestamp(memory.created)}
-              </time>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                <time dateTime={new Date(Number(memory.created) / 1000000).toISOString()}>
+                  {formatTimestamp(memory.created)}
+                </time>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsFullscreenOpen(true)}
+                className="h-8 px-2"
+                aria-label="View full screen"
+              >
+                <Maximize2 className="w-4 h-4" />
+              </Button>
             </div>
           </div>
         </CardHeader>
@@ -108,6 +121,12 @@ function MemoryCard({ memory }: { memory: Memory }) {
           onClose={() => setIsVideoViewerOpen(false)}
         />
       )}
+
+      <MemoryFullscreenViewer
+        memory={memory}
+        isOpen={isFullscreenOpen}
+        onClose={() => setIsFullscreenOpen(false)}
+      />
     </>
   );
 }

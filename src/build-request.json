@@ -1,126 +1,87 @@
 {
   "kind": "build_request",
-  "title": "Replace Tingi with Piddu deterministic bot (no search/backend)",
+  "title": "Require username + 4-digit code on lock screen (allow tingi99 or meow99)",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-36",
-      "text": "Remove the existing Tingi search assistant experience and replace it with a new bottom-right floating helper widget named “Piddu” that simulates a ChatGPT-style chat experience using deterministic/scripted behavior only, with a fully new UI look.",
+      "id": "REQ-54",
+      "text": "Update the lock screen (PasswordGate) UI to include a username input section positioned above the existing 4-digit PIN input, and use clear English labels and helper text.",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-4",
-          "msg-8",
-          "msg-10"
+          "msg-5",
+          "msg-6"
         ],
         "quotes": [
-          "Can remove Tingi and add a new bot like chat gpt in place of it and name it piddu",
-          "Simulated and deterministic bot",
-          "No \nYes"
+          "require entering a username + the existing 4‑digit code",
+          "both usernames (tingi99 and meow99) be accepted",
+          "above the PIN input"
         ]
       },
       "acceptanceCriteria": [
-        "The main memories experience (after password gate + welcome page dismissal) shows a floating bottom-right launcher for “Piddu”.",
-        "The widget’s visible name is “Piddu” (not “Tingi”) in the launcher aria-labels, dialog header/title, and any empty/welcome text.",
-        "Piddu’s UI styling/layout is clearly different from the existing TingiWidget look (new visual design while still matching the site’s warm theme and shadcn/Tailwind patterns).",
-        "All user-facing text in the Piddu widget is in English and does not reference Google, chrome.com, or searching.",
-        "The widget supports: open/close, message history, user input, send action, and a loading state before showing a deterministic response."
+        "The lock screen displays a new \"Username\" input field above the existing \"Access Code\" (PIN) field.",
+        "All user-facing text in the lock screen remains in English and matches the site’s warm visual theme (Tailwind + shadcn).",
+        "The username field accepts free-typed text (not numeric-only), while the access code field remains numeric-only and limited to 4 digits."
       ]
     },
     {
-      "id": "REQ-37",
-      "text": "Implement Piddu’s responses entirely on the frontend using deterministic logic (no LLM calls, no external APIs, and no backend calls).",
+      "id": "REQ-55",
+      "text": "Change the lock/unlock validation so the site unlocks only when the visitor enters an allowed username (exactly \"tingi99\" or \"meow99\") AND the existing 4-digit code (exactly \"5699\").",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-8",
-          "msg-10"
+          "msg-4",
+          "msg-5",
+          "msg-6"
         ],
         "quotes": [
-          "Simulated and deterministic bot",
-          "No"
+          "require entering a username + the existing 4‑digit code",
+          "both usernames (tingi99 and meow99) be accepted"
         ]
       },
       "acceptanceCriteria": [
-        "Submitting a message never triggers network requests for search/summarization (no calls to backend search endpoints and no calls to Google Custom Search).",
-        "Piddu returns responses generated from deterministic/scripted templates (e.g., pattern-based replies) and consistently works offline once the app is loaded.",
-        "The UI shows an in-progress/loading indicator between send and response, even though the response is deterministic."
+        "Entering username \"tingi99\" with access code \"5699\" unlocks the site.",
+        "Entering username \"meow99\" with access code \"5699\" unlocks the site.",
+        "Any other username value does not unlock the site, even if the code is correct.",
+        "Any incorrect code does not unlock the site, even if the username is one of the allowed values.",
+        "Error messaging is shown in English and clearly distinguishes invalid credentials (e.g., \"Incorrect username or code. Please try again.\") without revealing any new secrets beyond the allowed usernames already specified by the user."
       ]
     },
     {
-      "id": "REQ-38",
-      "text": "Remove Tingi search wiring from the frontend, including the React Query mutation hook and any unused Tingi configuration/search helper modules, so the build contains no active Tingi search flow.",
+      "id": "REQ-56",
+      "text": "Persist the unlocked state for the current browser session only when BOTH username + code are valid, and ensure the existing \"Lock\" action fully re-locks the site so the username+code screen is shown again.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-10"
+          "msg-4",
+          "msg-5",
+          "msg-6"
         ],
         "quotes": [
-          "No"
+          "require entering a username + the existing 4‑digit code"
         ]
       },
       "acceptanceCriteria": [
-        "frontend/src/components/TingiWidget.tsx is removed or replaced such that it no longer imports or uses useTingiSearch and no longer renders Tingi branding or search-related UI.",
-        "frontend/src/hooks/useQueries.ts no longer exports useTingiSearch and is updated/cleaned up to avoid dead code related to Tingi search.",
-        "frontend/src/hooks/useTingiConfig.ts is removed or updated so it is not referenced by the UI (and no longer mentions backend Google Custom Search credential handling).",
-        "The frontend compiles without references to Tingi search types (e.g., TingiResponse) and without unused/empty placeholder search/humor modules being required at runtime."
-      ]
-    },
-    {
-      "id": "REQ-39",
-      "text": "Remove the Tingi Google Custom Search backend API and HTTP outcall logic from the Motoko canister so the backend provides no search/summarizing functionality for the helper bot.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-10"
-        ],
-        "quotes": [
-          "No"
-        ]
-      },
-      "acceptanceCriteria": [
-        "backend/main.mo no longer exposes performTingiSearch or any TingiResponse type used for Google Custom Search results.",
-        "backend/main.mo removes the Google Custom Search API key and CX usage from executable code paths.",
-        "If the HTTP outcall transform helper becomes unused after removing search, it is removed as well (or left only if required elsewhere).",
-        "The canister still builds and the memories APIs (submitMemory/getMemory/getAllMemories) continue to work as before."
-      ]
-    },
-    {
-      "id": "REQ-40",
-      "text": "Update the app shell to render the new Piddu widget (instead of TingiWidget) only in the main memories experience (after the visitor unlocks with the 4-digit code and dismisses the welcome page).",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-6",
-          "msg-10"
-        ],
-        "quotes": [
-          "Yes",
-          "No \nYes"
-        ]
-      },
-      "acceptanceCriteria": [
-        "frontend/src/App.tsx no longer imports/renders TingiWidget and instead imports/renders the new Piddu widget at the same gating point (unlocked + welcome dismissed).",
-        "Piddu is not visible on the password gate screen or the welcome page screen.",
-        "The rest of the site layout (header, hero, submission form, memory list, footer) remains unchanged aside from the widget swap."
+        "After a successful unlock with a valid username + \"5699\", refreshing the page during the same browser session does not re-prompt for credentials (same behavior as before, now gated by both fields).",
+        "Clicking the existing \"Lock\" button returns the visitor to the username+code gate and clears the session’s unlocked state so a refresh shows the gate again.",
+        "No backend changes are required for this persistence behavior (session-only browser storage remains the mechanism)."
       ]
     }
   ],
   "constraints": [
-    "Do not integrate any real LLM provider (OpenAI/ChatGPT/Anthropic/etc.); Piddu must be simulated/deterministic only.",
-    "Do not add any UI that allows visitors to view, edit, or store any API credentials.",
-    "Respect frontend immutable paths listed in SYSTEM_CONTEXT (do not modify those files).",
-    "Backend must remain a single Motoko actor in backend/main.mo; add migration.mo only if state schema changes (not expected for this change)."
+    "Do not add any UI that allows visitors to configure or change the required username list or the 4-digit code; allowed usernames must be exactly \"tingi99\" and \"meow99\" and the code must remain exactly \"5699\".",
+    "Do not modify files under frontend/src/components/ui or any other immutablePaths listed in SYSTEM_CONTEXT.",
+    "Keep all user-facing text in English."
   ],
   "nonGoals": [
-    "Implementing real ChatGPT-style AI or calling any external LLM services.",
-    "Adding real-time communication (WebSockets) or multi-user chat.",
-    "Adding/keeping Google Custom Search functionality or any search-based summarization for the bot."
+    "Adding Internet Identity or any other authentication system.",
+    "Storing usernames persistently beyond the current browser session.",
+    "Changing the welcome page flow or any post-unlock features (memories, music box, YouTube links).",
+    "Any backend canister changes or migrations."
   ],
   "imageRequirements": {
-    "required": [
-      "Rounded friendly mascot icon illustration (piddu-icon.dim_128x128.png)"
-    ],
+    "required": [],
     "edits": []
   },
   "userProfileUpdate": {

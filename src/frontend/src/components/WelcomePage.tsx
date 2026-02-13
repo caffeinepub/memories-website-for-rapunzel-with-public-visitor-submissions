@@ -22,6 +22,9 @@ export function WelcomePage({ onContinue, onLock }: WelcomePageProps) {
           <CardTitle className="text-4xl font-serif font-bold text-foreground">
             Welcome to Rapunzel's Memory Book
           </CardTitle>
+          <p className="text-xl font-serif text-muted-foreground">
+            Made for Tingi
+          </p>
         </CardHeader>
         
         <CardContent className="space-y-6">

@@ -2,17 +2,20 @@ import { MemorySubmitForm } from './components/MemorySubmitForm';
 import { MemoryList } from './components/MemoryList';
 import { PasswordGate } from './components/PasswordGate';
 import { WelcomePage } from './components/WelcomePage';
-import { PidduWidget } from './components/PidduWidget';
+import { MusicBoxWidget } from './components/MusicBoxWidget';
+import { YouTubeLinksDialog } from './components/YouTubeLinksDialog';
 import { useMemories } from './hooks/useMemories';
 import { usePasswordGate } from './hooks/usePasswordGate';
 import { useWelcomeGate } from './hooks/useWelcomeGate';
-import { Sparkles, Lock } from 'lucide-react';
+import { Sparkles, Lock, Link as LinkIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useState } from 'react';
 
 function App() {
   const { memories, isLoading, error } = useMemories();
   const { isUnlocked, isInitializing: isPasswordInitializing, unlock, lock } = usePasswordGate();
   const { isDismissed, isInitializing: isWelcomeInitializing, dismiss, reset } = useWelcomeGate();
+  const [isYouTubeLinksOpen, setIsYouTubeLinksOpen] = useState(false);
 
   // Show nothing while checking session storage
   if (isPasswordInitializing || isWelcomeInitializing) {
@@ -156,8 +159,22 @@ function App() {
         </div>
       </footer>
 
-      {/* Piddu Widget - Only visible when unlocked and welcome dismissed */}
-      <PidduWidget />
+      {/* Music Box Widget - Only visible when unlocked and welcome dismissed */}
+      <MusicBoxWidget />
+
+      {/* YouTube Links Floating Button - Only visible when unlocked and welcome dismissed */}
+      <button
+        onClick={() => setIsYouTubeLinksOpen(true)}
+        className="fixed bottom-6 left-6 z-50 w-16 h-16 rounded-2xl bg-gradient-to-br from-destructive/80 via-accent to-primary/80 hover:shadow-2xl shadow-lg transition-all duration-300 flex items-center justify-center group hover:scale-105 border-2 border-destructive/30"
+        aria-label="Open YouTube Links"
+      >
+        <LinkIcon className="w-8 h-8 text-white group-hover:scale-110 transition-transform duration-200" />
+      </button>
+
+      <YouTubeLinksDialog 
+        isOpen={isYouTubeLinksOpen} 
+        onClose={() => setIsYouTubeLinksOpen(false)} 
+      />
     </div>
   );
 }

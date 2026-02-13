@@ -7,10 +7,11 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Lock } from 'lucide-react';
 
 interface PasswordGateProps {
-  onUnlock: (password: string) => boolean;
+  onUnlock: (username: string, password: string) => boolean;
 }
 
 export function PasswordGate({ onUnlock }: PasswordGateProps) {
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
@@ -18,14 +19,20 @@ export function PasswordGate({ onUnlock }: PasswordGateProps) {
     e.preventDefault();
     setError('');
 
+    if (username.trim().length === 0) {
+      setError('Please enter a username');
+      return;
+    }
+
     if (password.length !== 4) {
       setError('Please enter a 4-digit code');
       return;
     }
 
-    const success = onUnlock(password);
+    const success = onUnlock(username.trim(), password);
     if (!success) {
-      setError('Incorrect code. Please try again.');
+      setError('Incorrect username or code. Please try again.');
+      setUsername('');
       setPassword('');
     }
   };
@@ -34,6 +41,11 @@ export function PasswordGate({ onUnlock }: PasswordGateProps) {
     // Only allow digits and max 4 characters
     const filtered = value.replace(/\D/g, '').slice(0, 4);
     setPassword(filtered);
+    if (error) setError('');
+  };
+
+  const handleUsernameChange = (value: string) => {
+    setUsername(value);
     if (error) setError('');
   };
 
@@ -48,11 +60,27 @@ export function PasswordGate({ onUnlock }: PasswordGateProps) {
           </div>
           <CardTitle className="text-2xl font-serif">Protected Access</CardTitle>
           <CardDescription>
-            Enter the 4-digit code to access Rapunzel's Memory Book
+            Enter your username and 4-digit code to access Rapunzel's Memory Book
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="username">Username</Label>
+              <Input
+                id="username"
+                type="text"
+                placeholder="Enter username"
+                value={username}
+                onChange={(e) => handleUsernameChange(e.target.value)}
+                autoFocus
+                autoComplete="off"
+              />
+              <p className="text-xs text-muted-foreground">
+                Enter your username
+              </p>
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="password">Access Code</Label>
               <Input
@@ -65,7 +93,6 @@ export function PasswordGate({ onUnlock }: PasswordGateProps) {
                 onChange={(e) => handlePasswordChange(e.target.value)}
                 className="text-center text-2xl tracking-widest"
                 maxLength={4}
-                autoFocus
                 autoComplete="off"
               />
               <p className="text-xs text-muted-foreground text-center">
@@ -82,7 +109,7 @@ export function PasswordGate({ onUnlock }: PasswordGateProps) {
             <Button 
               type="submit" 
               className="w-full"
-              disabled={password.length !== 4}
+              disabled={username.trim().length === 0 || password.length !== 4}
             >
               Unlock
             </Button>

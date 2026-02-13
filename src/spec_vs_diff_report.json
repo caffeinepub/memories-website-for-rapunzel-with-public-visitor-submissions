@@ -1,46 +1,15 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-12T22:41:23.821Z",
-  "summary": "Diff adds a new frontend-only PidduWidget and deterministic response helper, updates App.tsx to render Piddu after unlock + welcome dismissal, and removes Tingi backend logic from backend/main.mo. However, the diff does not clearly show full removal of all Tingi-related frontend modules/assets, and the required piddu icon image file is not evidenced as added.",
-  "missing_requirements": [
-    {
-      "id": "REQ-38",
-      "requirement": "Remove Tingi search wiring from the frontend, including unused Tingi configuration/search helper modules, so the build contains no active Tingi search flow.",
-      "reason": "The diff only shows useQueries.ts being emptied, but does not show removal/cleanup of other Tingi search modules (e.g., googleCustomSearch wrapper, humor/templates) and file summaries still describe TingiWidget and Google Custom Search modules as present. TingiWidget.tsx is listed as modified, but its new contents are not shown, so it is not verifiable that it no longer contains Tingi branding/search UI or imports.",
-      "evidence": [
-        "frontend/src/hooks/useQueries.ts",
-        "frontend-file-summaries.txt (mentions frontend/src/lib/googleCustomSearch.ts, frontend/src/lib/tingiHumor.ts, and describes frontend/src/components/TingiWidget.tsx as a backend-search widget)"
-      ]
-    },
-    {
-      "id": "REQ-36",
-      "requirement": "Add the required rounded friendly mascot icon illustration (piddu-icon.dim_128x128.png) used by the widget.",
-      "reason": "PidduWidget references /assets/generated/piddu-icon.dim_128x128.png, but the diff summary does not show any image asset being added (only LLM-readable files are listed), so the presence of the required image cannot be verified from the diff.",
-      "evidence": [
-        "frontend/src/components/PidduWidget.tsx (references /assets/generated/piddu-icon.dim_128x128.png)"
-      ]
-    }
-  ],
-  "hallucinated_features": [
-    {
-      "description": "Randomized simulated processing delay for Piddu responses.",
-      "reason": "The request requires deterministic/scripted behavior; the widget introduces a random delay (Math.random) which was not requested and could be interpreted as non-deterministic behavior (even if only timing-related).",
-      "evidence": [
-        "frontend/src/components/PidduWidget.tsx (setTimeout with 800 + Math.random() * 700)"
-      ]
-    }
-  ],
-  "confidence": 0.62,
+  "generatedAt": "2026-02-13T13:42:09.163Z",
+  "summary": "The diff implements the requested username + 4-digit code lock screen changes by updating PasswordGate UI to include a Username field above the Access Code field, enforcing numeric-only 4-digit entry for the code, adding English validation/error messaging, and updating the password-gate hook to validate only allowed usernames (tingi99/meow99) plus code 5699 with sessionStorage-based session-only persistence and a lock action that clears the session flag.",
+  "missing_requirements": [],
+  "hallucinated_features": [],
+  "confidence": 0.74,
   "changed_files": [
-    "backend/main.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/App.tsx",
-    "frontend/src/components/PidduWidget.tsx",
-    "frontend/src/components/TingiWidget.tsx",
-    "frontend/src/hooks/useQueries.ts",
-    "frontend/src/hooks/useTingiConfig.ts",
-    "frontend/src/lib/pidduDeterministic.ts",
+    "frontend/src/components/PasswordGate.tsx",
+    "frontend/src/hooks/usePasswordGate.ts",
     "project_state.json"
   ]
 }

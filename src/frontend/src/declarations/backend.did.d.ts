@@ -18,14 +18,38 @@ export interface Memory {
   'imageUrl' : [] | [string],
   'videoUrl' : [] | [string],
 }
+export interface Song {
+  'title' : [] | [string],
+  'year' : [] | [bigint],
+  'description' : [] | [string],
+  'fileName' : string,
+  'artist' : [] | [string],
+  'bytes' : Uint8Array,
+}
 export type SubmitMemoryResponse = { 'ok' : Memory } |
   { 'err' : { 'message' : string } };
+export interface YouTubeLink { 'url' : string, 'timestamp' : bigint }
 export interface _SERVICE {
   'getAllMemories' : ActorMethod<[], Array<Memory>>,
+  'getAllSongs' : ActorMethod<[], Array<[bigint, Song]>>,
   'getMemory' : ActorMethod<[bigint], [] | [Memory]>,
+  'getSong' : ActorMethod<[bigint], [] | [Song]>,
+  'getYouTubeLinks' : ActorMethod<[], Array<YouTubeLink>>,
   'submitMemory' : ActorMethod<
     [string, [] | [string], [] | [string], [] | [string]],
     SubmitMemoryResponse
+  >,
+  'submitYouTubeLink' : ActorMethod<[string], boolean>,
+  'uploadSong' : ActorMethod<
+    [
+      Uint8Array,
+      string,
+      [] | [string],
+      [] | [string],
+      [] | [bigint],
+      [] | [string],
+    ],
+    bigint
   >,
 }
 export declare const idlService: IDL.ServiceClass;

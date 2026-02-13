@@ -1,95 +1,61 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-12T22:41:23.825Z",
+  "generatedAt": "2026-02-13T13:42:09.168Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 5,
-    "implemented": 4,
+    "total": 3,
+    "implemented": 3,
     "items": [
       {
-        "id": "REQ-36",
-        "summary": "Remove the existing Tingi search assistant experience and replace it with a new bottom-right floating helper widget named “Piddu” that simulates a ChatGPT-style chat experience using deterministic/scripted behavior only, with a fully new UI look.",
+        "id": "REQ-54",
+        "summary": "Update the lock screen (PasswordGate) UI to include a username input section positioned above the existing 4-digit PIN input, and use clear English labels and helper text.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/PidduWidget.tsx",
-          "frontend/public/assets/generated/piddu-icon.dim_128x128.png",
-          "frontend/src/components/TingiWidget.tsx"
+          "frontend/src/components/PasswordGate.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/PidduWidget.tsx",
-          "frontend/public/assets/generated/piddu-icon.dim_128x128.png",
-          "frontend/src/components/TingiWidget.tsx"
+          "frontend/src/components/PasswordGate.tsx"
         ]
       },
       {
-        "id": "REQ-37",
-        "summary": "Implement Piddu’s responses entirely on the frontend using deterministic logic (no LLM calls, no external APIs, and no backend calls).",
+        "id": "REQ-55",
+        "summary": "Change the lock/unlock validation so the site unlocks only when the visitor enters an allowed username (exactly \"tingi99\" or \"meow99\") AND the existing 4-digit code (exactly \"5699\").",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/lib/pidduDeterministic.ts",
-          "frontend/src/components/PidduWidget.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/lib/pidduDeterministic.ts",
-          "frontend/src/components/PidduWidget.tsx"
-        ]
-      },
-      {
-        "id": "REQ-38",
-        "summary": "Remove Tingi search wiring from the frontend, including the React Query mutation hook and any unused Tingi configuration/search helper modules, so the build contains no active Tingi search flow.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/hooks/useTingiConfig.ts",
-          "frontend/src/lib/googleCustomSearch.ts",
-          "frontend/src/lib/tingiHumor.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/hooks/useTingiConfig.ts"
-        ]
-      },
-      {
-        "id": "REQ-39",
-        "summary": "Remove the Tingi Google Custom Search backend API and HTTP outcall logic from the Motoko canister so the backend provides no search/summarizing functionality for the helper bot.",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-40",
-        "summary": "Update the app shell to render the new Piddu widget (instead of TingiWidget) only in the main memories experience (after the visitor unlocks with the 4-digit code and dismisses the welcome page).",
-        "status": "implemented",
-        "plannedFiles": [
+          "frontend/src/hooks/usePasswordGate.ts",
+          "frontend/src/components/PasswordGate.tsx",
           "frontend/src/App.tsx"
         ],
         "matchedFiles": [
+          "frontend/src/hooks/usePasswordGate.ts",
+          "frontend/src/components/PasswordGate.tsx"
+        ]
+      },
+      {
+        "id": "REQ-56",
+        "summary": "Persist the unlocked state for the current browser session only when BOTH username + code are valid, and ensure the existing \"Lock\" action fully re-locks the site so the username+code screen is shown again.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/usePasswordGate.ts",
           "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/hooks/usePasswordGate.ts"
         ]
       }
     ]
   },
   "changedFiles": [
-    "backend/main.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/public/assets/generated/piddu-icon.dim_128x128.png",
-    "frontend/src/App.tsx",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
-    "frontend/src/components/PidduWidget.tsx",
-    "frontend/src/components/TingiWidget.tsx",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
-    "frontend/src/hooks/useQueries.ts",
-    "frontend/src/hooks/useTingiConfig.ts",
-    "frontend/src/lib/pidduDeterministic.ts",
+    "frontend/src/components/PasswordGate.tsx",
+    "frontend/src/hooks/usePasswordGate.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

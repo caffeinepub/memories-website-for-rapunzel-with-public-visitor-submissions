@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 
 const STORAGE_KEY = 'rapunzel_unlocked';
 const CORRECT_PASSWORD = '5699';
+const ALLOWED_USERNAMES = ['tingi99', 'meow99'];
 
 export function usePasswordGate() {
   const [isUnlocked, setIsUnlocked] = useState<boolean>(false);
@@ -16,8 +17,8 @@ export function usePasswordGate() {
     setIsInitializing(false);
   }, []);
 
-  const unlock = (password: string): boolean => {
-    if (password === CORRECT_PASSWORD) {
+  const unlock = (username: string, password: string): boolean => {
+    if (ALLOWED_USERNAMES.includes(username) && password === CORRECT_PASSWORD) {
       setIsUnlocked(true);
       sessionStorage.setItem(STORAGE_KEY, 'true');
       return true;

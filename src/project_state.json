@@ -1,16 +1,18 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 23,
-  "summary": "Website for collecting and displaying written memories of a friend named Rapunzel, with visitors able to submit their own memories including uploading/attaching pictures and videos, protected by a simple front-end 4-digit password gate (5699) and showing a welcome page after unlocking; additionally includes a bottom-right corner helper bot named “Piddu” (replacing Tingi) which is a simulated/deterministic chat-style bot with a new UI look and no Google Custom Search or backend search/summarizing functionality.",
+  "projectStateVersion": 29,
+  "summary": "Website for collecting and displaying written memories of a friend named Rapunzel, with public visitor submissions (including optional image/video uploads), protected by a simple front-end username + 4-digit password gate (allowed usernames: tingi99 or meow99; code: 5699) and a welcome page after unlocking; welcome page includes a “Made for Tingi” subheading. Main experience includes a bottom-right floating “music box” widget where visitors can upload music files stored in the backend and played from a shared list; additionally includes a new post-unlock YouTube links page (opened via a floating button) where visitors can submit and view YouTube video/Short links with upload timestamps, and memories can be opened in a separate full-screen view with visible timestamps in the list.",
   "architectural_notes": [
     "Password protection requested is front-end only (not secure access control); it hides content in the UI until the correct 4-digit code is entered.",
     "Image selection should use standard browser file picker (<input type=\"file\">); browsers do not support deeper device-level storage permissions.",
     "Video uploads should use standard browser file picker (<input type=\"file\" accept=\"video/*\">) and store the selected video as a data URL; videos should not autoplay and should only play when the memory card is opened.",
-    "Piddu bot replaces Tingi: bottom-right widget with a new UI look; simulated/deterministic responses only (no real LLM integration) and no Google Custom Search / no backend search or summarizing."
+    "Piddu bot replaces Tingi: bottom-right widget with a new UI look; simulated/deterministic responses only (no real LLM integration) and no Google Custom Search / no backend search or summarizing.",
+    "Piddu/chat UI is removed and replaced by a bottom-right floating music-box widget that supports visitor music uploads.",
+    "Visitor-uploaded music should be persisted in the backend (shared across visitors) and rendered in the widget as a simple list with play/pause controls.",
+    "Password gate now requires a username + 4-digit code; username validation is front-end only and accepts either \"tingi99\" or \"meow99\" (username input displayed above the PIN input)."
   ],
   "known_issues": [],
   "isFixRequest": false,
-  "imageRequirements": "## Required Images\n- Rounded friendly mascot icon illustration (piddu-icon.dim_128x128.png)",
   "existing_features": [
     {
       "id": "feature-create-a-public-website-focused-on-written-memories-of-a-friend-named-rapunzel-with-a-landing-view-that-introduces-the-site-and-shows-a-readable-list-of-submitted-memories",
@@ -291,6 +293,110 @@
         "REQ-40"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-completely-remove-the-existing-piddu-chat-ui-and-behavior-and-replace-it-with-a-new-floating-bottom-right-music-box-widget-no-chat-features-the-widget-must-be-visible-only-in-the-main-memories-experience-after-the-visitor-unlocks-with-the-4-digit-code-and-dismisses-the-welcome-page-matching-the-current-placement-visibility-rules-used-for-piddu",
+      "title": "Completely remove the existing Piddu chat UI and behavior and replace it with a new floating bottom-right “Music Box” widget (no chat features). The widget must be visible only in the main memories experience (after the visitor unlocks with the 4-digit code and dismisses the welcome page), matching the current placement/visibility rules used for Piddu.",
+      "reqIds": [
+        "REQ-41"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-music-box-ui-that-lets-visitors-upload-an-audio-file-from-their-device-using-a-standard-browser-file-picker-submit-it-to-the-backend-and-show-clear-success-error-messaging-in-english",
+      "title": "Add Music Box UI that lets visitors upload an audio file from their device using a standard browser file picker, submit it to the backend, and show clear success/error messaging in English.",
+      "reqIds": [
+        "REQ-43"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-music-box-playback-ui-display-a-simple-list-of-uploaded-songs-with-play-pause-controls-that-work-on-mobile-and-desktop",
+      "title": "Add Music Box playback UI: display a simple list of uploaded songs with play/pause controls that work on mobile and desktop.",
+      "reqIds": [
+        "REQ-44"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-client-side-validation-for-uploaded-music-files-type-and-reasonable-size-limit-with-clear-english-validation-messages-plus-a-remove-clear-selection-action-prior-to-upload",
+      "title": "Add client-side validation for uploaded music files (type and reasonable size limit) with clear English validation messages, plus a remove/clear selection action prior to upload.",
+      "reqIds": [
+        "REQ-45"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-the-music-box-widget-matches-the-site-s-existing-warm-visual-theme-tailwind-shadcn-components-and-uses-english-user-facing-labels-e-g-music-box-upload-song-choose-an-audio-file-play-pause-no-songs-yet",
+      "title": "Ensure the Music Box widget matches the site’s existing warm visual theme (Tailwind + shadcn components) and uses English user-facing labels (e.g., “Music Box”, “Upload song”, “Choose an audio file”, “Play”, “Pause”, “No songs yet”).",
+      "reqIds": [
+        "REQ-46"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-frontend-data-layer-react-query-to-fetch-the-shared-song-list-from-the-backend-and-to-upload-new-songs-including-appropriate-cache-invalidation-so-the-list-updates-after-a-successful-upload",
+      "title": "Update the frontend data layer (React Query) to fetch the shared song list from the backend and to upload new songs, including appropriate cache invalidation so the list updates after a successful upload.",
+      "reqIds": [
+        "REQ-47"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-welcome-page-ui-to-display-the-exact-subheading-text-made-for-tingi-as-a-visible-subheading-under-the-main-welcome-title",
+      "title": "Update the Welcome page UI to display the exact subheading text \"Made for Tingi\" as a visible subheading under the main welcome title.",
+      "reqIds": [
+        "REQ-48"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-change-memory-timestamp-formatting-in-the-memories-list-to-include-both-date-and-time-of-day-not-only-the-date-using-english-formatting",
+      "title": "Change memory timestamp formatting in the Memories list to include both date and time-of-day (not only the date), using English formatting.",
+      "reqIds": [
+        "REQ-49"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-separate-full-screen-view-for-an-individual-memory-that-visitors-can-open-from-the-memories-list-when-they-want-to-read-view-a-memory-in-a-larger-layout-and-close-to-return-to-the-list",
+      "title": "Add a separate full-screen view for an individual memory that visitors can open from the memories list when they want to read/view a memory in a larger layout, and close to return to the list.",
+      "reqIds": [
+        "REQ-50"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-new-post-unlock-youtube-links-page-in-the-frontend-that-is-accessible-via-a-floating-button-visible-only-in-the-main-post-unlock-experience-i-e-after-unlocking-and-dismissing-the-welcome-page-the-page-must-allow-visitors-to-submit-a-youtube-video-short-url-and-display-the-shared-list-with-time-of-upload-shown",
+      "title": "Add a new post-unlock \"YouTube Links\" page in the frontend that is accessible via a floating button (visible only in the main post-unlock experience, i.e., after unlocking and dismissing the Welcome page). The page must allow visitors to submit a YouTube video/Short URL and display the shared list with time-of-upload shown.",
+      "reqIds": [
+        "REQ-52"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-lock-screen-passwordgate-ui-to-include-a-username-input-section-positioned-above-the-existing-4-digit-pin-input-and-use-clear-english-labels-and-helper-text",
+      "title": "Update the lock screen (PasswordGate) UI to include a username input section positioned above the existing 4-digit PIN input, and use clear English labels and helper text.",
+      "reqIds": [
+        "REQ-54"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-change-the-lock-unlock-validation-so-the-site-unlocks-only-when-the-visitor-enters-an-allowed-username-exactly-tingi99-or-meow99-and-the-existing-4-digit-code-exactly-5699",
+      "title": "Change the lock/unlock validation so the site unlocks only when the visitor enters an allowed username (exactly \"tingi99\" or \"meow99\") AND the existing 4-digit code (exactly \"5699\").",
+      "reqIds": [
+        "REQ-55"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-persist-the-unlocked-state-for-the-current-browser-session-only-when-both-username-code-are-valid-and-ensure-the-existing-lock-action-fully-re-locks-the-site-so-the-username-code-screen-is-shown-again",
+      "title": "Persist the unlocked state for the current browser session only when BOTH username + code are valid, and ensure the existing \"Lock\" action fully re-locks the site so the username+code screen is shown again.",
+      "reqIds": [
+        "REQ-56"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -353,17 +459,71 @@
       "status": "pending"
     },
     {
-      "id": "AR-21",
-      "summary": "Remove Tingi and replace it with a bottom-right corner helper bot named “Piddu” that simulates a ChatGPT-style experience using deterministic/scripted behavior only (no real LLM integration), with a fully new UI look and no search/summarizing backend functionality.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
       "id": "AR-25",
       "summary": "Remove the Tingi Google Custom Search backend API and HTTP outcall logic from the Motoko canister so the backend provides no search/summarizing functionality for the helper bot.",
       "reqIds": [
         "REQ-39"
       ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-26",
+      "summary": "Replace the Piddu chatbot with a bottom-right floating music-box widget (no chat UI) that lets visitors upload music files, stores them in the backend so all visitors can see/play them, and displays a simple list with play/pause controls.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-28",
+      "summary": "Implement backend storage for visitor-uploaded music so that uploaded songs persist and are visible/playable to all visitors (not just the uploading browser). Add Motoko APIs to create/upload a song and list all songs.",
+      "reqIds": [
+        "REQ-42"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-29",
+      "summary": "Add a “Made for Tingi” subheading on the welcome page shown after unlocking.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-30",
+      "summary": "Add a post-unlock YouTube links page where visitors can submit YouTube video/Short links, store them with an uploaded timestamp, and display them in a list similar to memories; provide access via a floating button.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-31",
+      "summary": "Ensure the memories list UI displays timestamps (time included) for each memory entry.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-32",
+      "summary": "Add a separate full-screen view for individual memories (open a memory to view it full-screen when needed).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-36",
+      "summary": "Implement backend storage and APIs for a new post-unlock \"YouTube Links\" feature where visitors can submit a YouTube video/Short link and later view a shared list of submitted links with upload timestamps.",
+      "reqIds": [
+        "REQ-51"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-38",
+      "summary": "Add or update Motoko state migration so that upgrading an existing deployed canister preserves existing stored memories and songs while adding storage for the new YouTube-links feature.",
+      "reqIds": [
+        "REQ-53"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-39",
+      "summary": "Update the front-end lock screen to require entering an allowed username (tingi99 or meow99) plus the existing 4-digit code (5699), with the username input placed above the PIN input.",
+      "reqIds": [],
       "status": "pending"
     }
   ],
