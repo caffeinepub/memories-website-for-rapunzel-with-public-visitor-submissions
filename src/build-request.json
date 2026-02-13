@@ -1,47 +1,101 @@
 {
   "kind": "build_request",
-  "title": "Redeploy the current application build",
-  "priority": "normal",
+  "title": "Rollback to Version 21 and fix memory/chat write persistence issues",
+  "priority": "high",
   "requirements": [
     {
-      "id": "REQ-83",
-      "text": "Redeploy the application using the current codebase (no feature changes), and ensure the deployment completes successfully.",
-      "target": "unknown",
+      "id": "REQ-1",
+      "text": "Rollback the application (frontend + backend) to the exact behavior and feature set of Live Version 21, fully discarding all changes introduced in Versions 22–24 (including the dynamic lock screen phrase rotation and changing background system).",
+      "target": "both",
       "source": {
         "messageIds": [
-          "msg-2"
+          "msg-10",
+          "msg-11",
+          "msg-12"
         ],
         "quotes": [
-          "Deploy again"
+          "Live Version 21 again",
+          "1 yes\n2 yes\n3 no",
+          "Build"
         ]
       },
       "acceptanceCriteria": [
-        "A new deployment is triggered using the current repository state.",
-        "Deployment finishes successfully (no deployment failure).",
-        "If deployment fails again, provide the full deployment error output/logs so the failure can be diagnosed in a follow-up change request."
+        "After deployment, the app behavior matches Live Version 21 for both frontend and backend (no Version 22–24 features present).",
+        "The lock screen no longer shows the dynamic phrase/background rotation behavior introduced after Version 21.",
+        "No code/assets introduced solely for Versions 22–24 are referenced by the running UI."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Fix the backend so that creating and editing memories reliably persists across canister upgrades/redeploys, and the memory list reflects newly submitted/edited memories immediately after successful writes.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-6"
+        ],
+        "quotes": [
+          "Fix the memory writing and chat writing issues"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Submitting a memory returns an ok response and the memory appears in getAllMemories immediately afterward.",
+        "Editing a memory returns an ok response and the updated content appears in getAllMemories immediately afterward.",
+        "After a canister upgrade/redeploy, previously submitted and edited memories are still present and unchanged.",
+        "No traps occur during submitMemory/editMemory for valid inputs."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Fix the backend so that submitting chat messages reliably persists across canister upgrades/redeploys, messages are returned in a consistent order, and deletions work reliably with the IDs sent by the frontend.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-6"
+        ],
+        "quotes": [
+          "Fix the memory writing and chat writing issues"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Submitting a message returns an ok response and the message appears in getMessages immediately afterward.",
+        "getMessages returns messages in a stable, deterministic order (documented by behavior; e.g., chronological by created then id).",
+        "Deleting a message ID owned by the caller removes it from subsequent getMessages responses.",
+        "After a canister upgrade/redeploy, previously submitted messages are still present and unchanged (except those deleted by authorized callers)."
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Fix the frontend chat delete mutations to send message IDs in the exact Candid type expected by the backend deleteChatMessages method, and ensure the UI reflects successful deletion without requiring a full page refresh.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-6"
+        ],
+        "quotes": [
+          "Fix the memory writing and chat writing issues"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Single delete from the chat UI successfully deletes the message (owned by the caller) and it disappears from the message list.",
+        "Bulk delete from multi-select successfully deletes selected owned messages and they disappear from the message list.",
+        "No runtime errors occur due to mismatched argument types when calling deleteChatMessages.",
+        "The messages query cache is refreshed after deletion and the UI updates accordingly."
       ]
     }
   ],
   "constraints": [
-    "Do not change application behavior, UI, or backend logic as part of this redeploy request."
+    "Backend must remain a single Motoko actor with all logic in backend/main.mo.",
+    "Only add backend/migration.mo if needed to preserve/upgrade existing stable state (per conditional migration policy).",
+    "Do not modify files under frontend/src/components/ui or other paths listed as immutable in SYSTEM_CONTEXT.",
+    "Use English for any user-facing text."
   ],
   "nonGoals": [
-    "Implementing new features or fixes.",
-    "Refactoring frontend/backend code.",
-    "Changing canister state, schemas, or performing migrations."
+    "Do not add new features beyond rollback + fixing memory/chat writing reliability.",
+    "Do not add third-party auth providers; Internet Identity remains the only supported auth mechanism.",
+    "Do not introduce external databases or non-Motoko backend services."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
-  },
-  "userProfileUpdate": {
-    "goalsToAdd": [],
-    "goalsToRemove": [],
-    "preferencesToAdd": [],
-    "preferencesToRemove": [],
-    "miscToAdd": [],
-    "miscToRemove": [],
-    "fieldsToSet": {},
-    "fieldsToDelete": []
   }
 }

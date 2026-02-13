@@ -1,34 +1,75 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-13T23:08:18.479Z",
+  "generatedAt": "2026-02-13T23:39:58.521Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 1,
-    "implemented": 1,
+    "total": 4,
+    "implemented": 2,
     "items": [
       {
-        "id": "REQ-83",
-        "summary": "Redeploy the application using the current codebase (no feature changes), and ensure the deployment completes successfully.",
+        "id": "REQ-1",
+        "summary": "Rollback the application (frontend + backend) to the exact behavior and feature set of Live Version 21, fully discarding all changes introduced in Versions 22–24 (including the dynamic lock screen phrase rotation and changing background system).",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/REDEPLOY.md"
+          "frontend/src/components/PasswordGate.tsx",
+          "frontend/src/hooks/useLockScreenRotation.ts",
+          "frontend/src/lib/lockBackgrounds.ts",
+          "frontend/src/lib/lockPhrases.ts",
+          "frontend/src/App.tsx"
         ],
         "matchedFiles": [
-          "frontend/REDEPLOY.md"
+          "frontend/src/components/PasswordGate.tsx",
+          "frontend/src/hooks/useLockScreenRotation.ts",
+          "frontend/src/lib/lockBackgrounds.ts",
+          "frontend/src/lib/lockPhrases.ts"
+        ]
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Fix the backend so that creating and editing memories reliably persists across canister upgrades/redeploys, and the memory list reflects newly submitted/edited memories immediately after successful writes.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Fix the backend so that submitting chat messages reliably persists across canister upgrades/redeploys, messages are returned in a consistent order, and deletions work reliably with the IDs sent by the frontend.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-4",
+        "summary": "Fix the frontend chat delete mutations to send message IDs in the exact Candid type expected by the backend deleteChatMessages method, and ensure the UI reflects successful deletion without requiring a full page refresh.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/useChat.ts",
+          "frontend/src/components/ChatView.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/hooks/useChat.ts",
+          "frontend/src/components/ChatView.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
+    "backend/migration.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/REDEPLOY.md",
+    "frontend/src/components/ChatView.tsx",
+    "frontend/src/components/PasswordGate.tsx",
+    "frontend/src/hooks/useChat.ts",
+    "frontend/src/hooks/useLockScreenRotation.ts",
+    "frontend/src/lib/lockBackgrounds.ts",
+    "frontend/src/lib/lockPhrases.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

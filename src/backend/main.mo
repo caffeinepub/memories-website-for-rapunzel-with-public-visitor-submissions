@@ -6,13 +6,13 @@ import Principal "mo:core/Principal";
 import Set "mo:core/Set";
 import Time "mo:core/Time";
 import Iter "mo:core/Iter";
+import Migration "migration";
 import Runtime "mo:core/Runtime";
-
 
 import AccessControl "authorization/access-control";
 import MixinAuthorization "authorization/MixinAuthorization";
 
-
+(with migration = Migration.run)
 actor {
   // Initialize the access control system
   let accessControlState = AccessControl.initState();
@@ -295,11 +295,17 @@ actor {
 
   public shared ({ caller }) func deleteChatMessages(messageIdsToDelete : [Nat64]) : async () {
     // Authorization: Only delete messages that belong to the authenticated caller
-    // Messages from other senders are kept in the list
+    // Keep messages that are either not in the delete list, or don't belong to the caller
     messages := messages.filter(
       func(message) {
-        // Keep message if: it's not in the delete list OR it doesn't belong to caller
-        messageIdsToDelete.find(func(id) { id == message.id }) == null or message.sender != caller
+        // Keep message if it's not in the delete list
+        let isInDeleteList = messageIdsToDelete.find(func(id) { id == message.id }) != null;
+        if (not isInDeleteList) {
+          return true;
+        };
+        // If it is in the delete list, only delete if it belongs to the caller
+        // (i.e., keep it if it does NOT belong to the caller)
+        message.sender != caller
       }
     );
   };

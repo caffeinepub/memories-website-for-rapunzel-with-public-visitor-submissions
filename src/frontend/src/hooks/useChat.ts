@@ -51,10 +51,13 @@ export function useDeleteMessage() {
       if (!actor) {
         throw new Error('Backend connection not available');
       }
-      await actor.deleteChatMessages(new BigUint64Array([messageId]));
+      // Ensure we send exactly BigUint64Array with the message ID
+      const idsArray = new BigUint64Array(1);
+      idsArray[0] = messageId;
+      await actor.deleteChatMessages(idsArray);
     },
     onSuccess: () => {
-      // Invalidate and refetch messages
+      // Invalidate and refetch messages immediately
       queryClient.invalidateQueries({ queryKey: ['messages'] });
     },
   });
@@ -69,10 +72,20 @@ export function useDeleteMessages() {
       if (!actor) {
         throw new Error('Backend connection not available');
       }
-      await actor.deleteChatMessages(new BigUint64Array(messageIds));
+      // Normalize: filter out non-bigint, deduplicate, and sort for deterministic order
+      const uniqueIds = Array.from(new Set(messageIds.filter(id => typeof id === 'bigint')));
+      uniqueIds.sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+      
+      // Convert to BigUint64Array as required by backend
+      const idsArray = new BigUint64Array(uniqueIds.length);
+      uniqueIds.forEach((id, index) => {
+        idsArray[index] = id;
+      });
+      
+      await actor.deleteChatMessages(idsArray);
     },
     onSuccess: () => {
-      // Invalidate and refetch messages
+      // Invalidate and refetch messages immediately
       queryClient.invalidateQueries({ queryKey: ['messages'] });
     },
   });

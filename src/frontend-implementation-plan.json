@@ -1,21 +1,63 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Redeploy current application build (no feature changes)",
+  "title": "Rollback to Live Version 21 (frontend scope) + fix chat delete ID typing and UI refresh",
   "requirements": [
     {
-      "id": "REQ-83",
-      "summary": "Trigger a new deployment from the current codebase without changing app behavior, and capture deploy logs if it fails again.",
+      "id": "REQ-1",
+      "summary": "Rollback frontend behavior to match Live Version 21 by removing Version 22–24 lock screen dynamic phrase/background rotation and ensuring no V22–24-only UI code/assets are referenced.",
       "acceptanceCriteria": [
-        "A new deployment is triggered using the current repository state.",
-        "Deployment finishes successfully (no deployment failure).",
-        "If deployment fails again, provide the full deployment error output/logs so the failure can be diagnosed in a follow-up change request."
+        "After deployment, the app behavior matches Live Version 21 for both frontend and backend (no Version 22–24 features present).",
+        "The lock screen no longer shows the dynamic phrase/background rotation behavior introduced after Version 21.",
+        "No code/assets introduced solely for Versions 22–24 are referenced by the running UI."
       ],
       "file_operations": [
         {
-          "path": "frontend/REDEPLOY.md",
-          "operation": "create",
-          "description": "Add a non-functional redeploy note file whose commit can be used to trigger a fresh deployment without changing UI or frontend logic. Include brief instructions for collecting and attaching the full deployment error output/logs if the deployment fails again."
+          "path": "frontend/src/components/PasswordGate.tsx",
+          "operation": "modify",
+          "description": "Remove the timed dynamic lock screen phrase/background rotation behavior (stop using useLockScreenRotation + rotating phrases/background variants) and restore a static Version 21-style lock screen presentation. Keep existing shadcn-ui Card/Input/Button usage for layout and form controls. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useLockScreenRotation.ts",
+          "operation": "delete",
+          "description": "Delete the lock screen rotation hook introduced after Version 21 once PasswordGate no longer depends on it, ensuring it is not referenced anywhere in the running UI."
+        },
+        {
+          "path": "frontend/src/lib/lockBackgrounds.ts",
+          "operation": "modify",
+          "description": "Stop exposing multi-variant rotating lock background behavior; reduce to the single static background behavior needed for Version 21 (or remove exports if no longer used) so that rotation-specific logic/assets are no longer referenced by the UI."
+        },
+        {
+          "path": "frontend/src/lib/lockPhrases.ts",
+          "operation": "modify",
+          "description": "Stop exposing phrase rotation/randomization utilities used by the post-Version-21 lock screen; keep only the static phrase behavior required for Version 21 so dynamic phrase rotation is not referenced by the UI."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Verify and adjust wiring so the lock screen uses the updated static PasswordGate behavior and no Version 22–24 lock-screen-related code paths remain referenced. Ensure existing generated assets referenced here remain valid (no new images required)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Fix chat delete mutations to send message IDs in the exact Candid type expected (BigUint64Array) and refresh UI immediately after successful deletions without a full refresh.",
+      "acceptanceCriteria": [
+        "Single delete from the chat UI successfully deletes the message (owned by the caller) and it disappears from the message list.",
+        "Bulk delete from multi-select successfully deletes selected owned messages and they disappear from the message list.",
+        "No runtime errors occur due to mismatched argument types when calling deleteChatMessages.",
+        "The messages query cache is refreshed after deletion and the UI updates accordingly."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useChat.ts",
+          "operation": "modify",
+          "description": "Harden delete mutations to always send message IDs as BigUint64Array exactly as required by backendInterface.deleteChatMessages, including safe normalization (bigint-only), deterministic ordering, and de-duplication. Add immediate UI consistency by updating/invalidation of the React Query cache on success. (Uses core-infrastructure actor wiring via useActor.) Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/ChatView.tsx",
+          "operation": "modify",
+          "description": "Ensure single and bulk delete flows trigger immediate UI updates by relying on the corrected delete hooks (cache update + invalidation) and by clearing local selection state appropriately after successful deletion; keep shadcn-ui-based dialog/buttons intact. Verify the component's usage instructions before implementing."
         }
       ]
     }

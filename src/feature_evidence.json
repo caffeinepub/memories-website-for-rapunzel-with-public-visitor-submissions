@@ -2,10 +2,13 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-redeploy-the-application-using-the-current-codebase-no-feature-changes-and-ensure-the-deployment-completes-successfully",
-      "featureTitle": "Redeploy the application using the current codebase (no feature changes), and ensure the deployment completes successfully.",
+      "featureId": "feature-rollback-the-application-frontend-backend-to-the-exact-behavior-and-feature-set-of-live-version-21-fully-discarding-all-changes-introduced-in-versions-22-24-including-the-dynamic-lock-screen-phrase-rotation-and-changing-background-system",
+      "featureTitle": "Rollback the application (frontend + backend) to the exact behavior and feature set of Live Version 21, fully discarding all changes introduced in Versions 22–24 (including the dynamic lock screen phrase rotation and changing background system).",
       "files": [
-        "frontend/REDEPLOY.md"
+        "frontend/src/components/PasswordGate.tsx",
+        "frontend/src/hooks/useLockScreenRotation.ts",
+        "frontend/src/lib/lockBackgrounds.ts",
+        "frontend/src/lib/lockPhrases.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -17,7 +20,28 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-83"
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-fix-the-frontend-chat-delete-mutations-to-send-message-ids-in-the-exact-candid-type-expected-by-the-backend-deletechatmessages-method-and-ensure-the-ui-reflects-successful-deletion-without-requiring-a-full-page-refresh",
+      "featureTitle": "Fix the frontend chat delete mutations to send message IDs in the exact Candid type expected by the backend deleteChatMessages method, and ensure the UI reflects successful deletion without requiring a full page refresh.",
+      "files": [
+        "frontend/src/components/ChatView.tsx",
+        "frontend/src/hooks/useChat.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "http-outcalls@3.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
       ],
       "confidence": "high"
     }

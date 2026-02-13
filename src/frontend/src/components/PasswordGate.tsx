@@ -38,7 +38,6 @@ export function PasswordGate({ onUnlock }: PasswordGateProps) {
   };
 
   const handlePasswordChange = (value: string) => {
-    // Only allow digits and max 4 characters
     const filtered = value.replace(/\D/g, '').slice(0, 4);
     setPassword(filtered);
     if (error) setError('');
@@ -50,8 +49,37 @@ export function PasswordGate({ onUnlock }: PasswordGateProps) {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen relative flex items-center justify-center p-4 overflow-hidden">
+      {/* Static background */}
+      <div 
+        className="absolute inset-0"
+        style={{
+          background: 'linear-gradient(135deg, oklch(0.85 0.08 60) 0%, oklch(0.75 0.12 40) 50%, oklch(0.65 0.10 30) 100%)',
+        }}
+      />
+
+      {/* Overlay for contrast */}
+      <div 
+        className="absolute inset-0 bg-black"
+        style={{
+          opacity: 0.3,
+        }}
+      />
+
+      {/* Static phrase layer */}
+      <div 
+        className="absolute inset-0 flex items-center justify-center pointer-events-none px-8"
+        style={{
+          opacity: 0.15,
+        }}
+      >
+        <p className="text-4xl md:text-6xl lg:text-7xl font-serif text-white text-center leading-tight max-w-5xl">
+          Every moment is a thread in the tapestry of memory
+        </p>
+      </div>
+
+      {/* Unlock card - always on top */}
+      <Card className="w-full max-w-md relative z-10 shadow-2xl bg-background/95 backdrop-blur-sm">
         <CardHeader className="text-center space-y-2">
           <div className="flex justify-center mb-2">
             <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">

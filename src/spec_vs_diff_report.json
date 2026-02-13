@@ -1,46 +1,73 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-13T23:08:18.474Z",
-  "summary": "The diff adds a non-functional marker file intended to trigger a redeploy, but there is no evidence in the changes that deployment actually completed successfully or that any deployment failure logs were captured. The diff also includes updates to project metadata/summaries that are not explicitly requested by REQ-83.",
+  "generatedAt": "2026-02-13T23:39:58.518Z",
+  "summary": "Diff implements frontend chat delete ID coercion via BigUint64Array and cache invalidation, and removes dynamic lock screen rotation by making phrase/background static. Backend changes shown add access control/user profiles and memory CRUD logic, plus a no-op migration module, but do not show stable-state persistence or deterministic chat ordering/deletion reliability across upgrades.",
   "missing_requirements": [
     {
-      "id": "REQ-83",
-      "requirement": "Deployment finishes successfully (no deployment failure).",
-      "reason": "The diff only shows repository file changes; it contains no evidence of a successful deployment result (e.g., CI/CD output, release artifact, deployment record) or any deployment-related configuration changes that would demonstrate success.",
+      "id": "REQ-1",
+      "requirement": "Rollback the application (frontend + backend) to the exact behavior and feature set of Live Version 21, fully discarding all changes introduced in Versions 22–24 across the whole app (not just lock screen).",
+      "reason": "The diff evidence only clearly addresses lock screen rotation/background behavior via static phrase/background utilities and a static PasswordGate background/phrase. It does not provide evidence that other Version 22–24 changes across the full frontend/backend were fully removed, nor that the entire behavior matches Live Version 21.",
       "evidence": [
-        "frontend/REDEPLOY.md"
+        "frontend/src/components/PasswordGate.tsx",
+        "frontend/src/lib/lockPhrases.ts",
+        "frontend/src/lib/lockBackgrounds.ts",
+        "frontend/src/hooks/useLockScreenRotation.ts"
       ]
     },
     {
-      "id": "REQ-83",
-      "requirement": "If deployment fails again, provide the full deployment error output/logs so the failure can be diagnosed in a follow-up change request.",
-      "reason": "No deployment logs or error outputs are included in the diff; only a documentation note requesting logs if a future failure occurs.",
+      "id": "REQ-2",
+      "requirement": "Backend memory create/edit must reliably persist across canister upgrades/redeploys and reflect immediately in getAllMemories after writes.",
+      "reason": "In the shown backend snippet, memories/nextMemoryId are regular in-memory bindings (e.g., `var nextMemoryId` and `let memories = Map.empty...`) with no evidence of stable variables or preupgrade/postupgrade hooks to persist state across upgrades. Migration module exists but is a no-op and does not demonstrate stable-state preservation. Also getAllMemories implementation appears incorrect for mo:core/List usage (creating `let memoryList = List.empty` then calling `memoryList.add`), risking traps/compile errors and violating the 'no traps' AC.",
       "evidence": [
-        "frontend/REDEPLOY.md"
+        "backend/main.mo",
+        "backend/migration.mo"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "requirement": "Backend chat submit/delete must reliably persist across upgrades, return messages in deterministic order, and deletions must work reliably with frontend-sent IDs.",
+      "reason": "The backend diff snippet does not include chat message storage, submitMessage, getMessages ordering logic, or deleteChatMessages implementation. There is also no evidence of stable-state persistence (preupgrade/postupgrade or stable vars) for chat messages. Therefore persistence, deterministic ordering, and deletion semantics cannot be confirmed.",
+      "evidence": [
+        "backend/main.mo (truncated)"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Updated project state/metadata describing chat experience enhancements (not part of a pure redeploy request).",
-      "reason": "REQ-83 is strictly a redeploy with no behavior/UI/backend logic changes; modifying project_state.json summary/versioning to describe feature enhancements is not requested by the BuildRequest.",
+      "description": "Added/expanded backend authorization system and user profile APIs (getCallerUserProfile/getUserProfile/saveCallerUserProfile) with Runtime.trap-based authorization checks.",
+      "reason": "BuildRequest explicitly states non-goal: do not add new features beyond rollback + fixing memory/chat writing reliability. User profiles and new authorization behaviors are not requested by any REQ and may change Version 21 behavior.",
       "evidence": [
-        "project_state.json"
+        "backend/main.mo"
       ]
     },
     {
-      "description": "Updated frontend file summary listings unrelated to triggering a redeploy.",
-      "reason": "REQ-83 does not ask to update documentation/index files like frontend-file-summaries.txt; this appears ancillary and not required to trigger a redeploy.",
+      "description": "Added a backend migration module (migration.mo) that defines multiple types (Song, YouTubeLink, etc.) but runs as a no-op.",
+      "reason": "Adding migration support is allowed only 'if needed to preserve/upgrade existing stable state'. The shown migration does not perform any preservation/upgrade logic and introduces additional type surface unrelated to the stated fixes.",
       "evidence": [
-        "frontend-file-summaries.txt"
+        "backend/migration.mo",
+        "backend/main.mo (with migration = Migration.run)"
+      ]
+    },
+    {
+      "description": "Frontend chat polling every 3 seconds via React Query refetchInterval.",
+      "reason": "Not requested by any requirement; could be a behavioral change beyond rollback/fix scope (and may diverge from exact Version 21 behavior).",
+      "evidence": [
+        "frontend/src/hooks/useChat.ts"
       ]
     }
   ],
-  "confidence": 0.72,
+  "confidence": 0.66,
   "changed_files": [
+    "backend/main.mo",
+    "backend/migration.mo",
     "frontend-file-summaries.txt",
-    "frontend/REDEPLOY.md",
+    "frontend/src/components/ChatView.tsx",
+    "frontend/src/components/PasswordGate.tsx",
+    "frontend/src/hooks/useChat.ts",
+    "frontend/src/hooks/useLockScreenRotation.ts",
+    "frontend/src/lib/lockBackgrounds.ts",
+    "frontend/src/lib/lockPhrases.ts",
     "project_state.json"
   ]
 }
